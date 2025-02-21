@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة البيانات</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            direction: rtl;  /* التأكد من كتابة النص من اليمين */
+            text-align: right;  /* محاذاة النص إلى اليمين */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .text-danger {
+            color: red;
+            font-size: 0.9em;
+        }
+        button {
+            background-color: #160ea9;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0f0a7d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>إضافة بيانات المندوب</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">اسم المندوب</label>
+                {{ form.name }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.phone.id_for_label }}">رقم الهاتف</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <span class="text-danger">{{ form.phone.errors }}</span>
+                {% endif %} 
+            </div>
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">البريد الإلكتروني</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <span class="text-danger">{{ form.email.errors }}</span>
+                {% endif %} 
+            </div>
+            <div class="form-group">
+                <label for="{{ form.region.id_for_label }}">المنطقة</label>
+                {{ form.region }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.id_number.id_for_label }}">رقم الهوية</label>
+                {{ form.id_number }}
+                {% if form.id_number.errors %}
+                    <span class="text-danger">{{ form.id_number.errors }}</span>
+                {% endif %} 
+            </div>
+            <div class="form-group">
+                <label for="{{ form.id_image.id_for_label }}">صورة الهوية</label>
+                {{ form.id_image }}
+                {% if form.id_image.errors %}
+                    <span class="text-danger">{{ form.id_image.errors }}</span>
+                {% endif %} 
+            </div>
+            <div class="form-group">
+                <label for="{{ form.license_number.id_for_label }}">رقم الرخصة</label>
+                {{ form.license_number }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.license_image.id_for_label }}">صورة الرخصة</label>
+                {{ form.license_image }}
+                {% if form.license_image.errors %}
+                    <span class="text-danger">{{ form.license_image.errors }}</span>
+                {% endif %} 
+            </div>
+            <div class="form-group">
+                <label for="{{ form.city.id_for_label }}">المدينة</label>
+                {{ form.city }}  <!-- حقل اختيار المدينة -->
+            </div>
+            <div class="form-group">
+                <label for="{{ form.vehicle_type.id_for_label }}">نوع المركبة</label>
+                {{ form.vehicle_type }}
+                {% if form.vehicle_type.errors %}
+                    <span class="text-danger">{{ form.vehicle_type.errors }}</span>
+                {% endif %} 
+            </div>
+            <button type="submit">إضافة</button>
+        </form>
+    </div>
+</body>
+</html>

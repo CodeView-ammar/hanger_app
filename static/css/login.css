@@ -1,0 +1,120 @@
+@charset "UTF-8";
+
+/*	-------------------------------------------------------------
+	Dentech Healthcare
+	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  It is a dental electronic record system, which is characterized by having all the needs of dental practioners including the dental charting, complete formats of dental records, dental radiology, and treatment plans. The system capabilities of displaying the teeth on the chart with the numbering for each tooth and through which the treatment plan for patients is made, which in turn reflects the process of entering into images and shapes on the specified age so that the system translates them into images according to the added service, for example (fillings - Nerve treatment - orthodontics – implants).
+
+	Filename:		base.css
+	Date:       May, 01 2022
+	Done by:		ashiqueux@gmail.com
+	Company:    http://techmetasolutions.com/
+	-------------------------------------------------------------	
+	-------------------------------------------------------------  */
+
+    hrml, body {
+        min-height: 100vh;
+        height: 100%;
+    }
+
+    .login-right {
+        background-color:#002A80;
+        background-image:url(../images/login-background.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+        min-height: 100vh;
+        
+    }
+
+    .login-left {
+        background-color:#FFFFFF;
+        padding-left: 120px;
+        padding-right: 120px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        min-height: 100vh;
+    }
+    .logo-icon {
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+        text-align: center;
+        border:1px solid rgba(0,42,128,0.10);
+        border-radius: 16px 16px 16px 16px;
+        -moz-border-radius: 16px 16px 16px 16px;
+        -webkit-border-radius: 16px 16px 16px 16px;
+        margin-bottom: 60px;;
+    }
+    h1 {font-size: 24px; font-weight: 400;}
+    h1 span {font-weight: 700;}
+    h2 {
+        font-size: 14px; 
+        font-weight: 400; 
+        padding-top: 5px; 
+        margin-bottom: 40px;}
+    .tms-brand-text h1 {font-size: 34px; font-weight: 500;} 
+    .tms-brand-text  h2 {
+        font-size: 22px; 
+        font-weight: 400; 
+        padding-top: 15px;}
+    hr {
+        width: 60px;
+        background-color: #FF6A38;
+        height: 6px !important;
+        opacity: 1;
+    }       
+    .form-select {
+        padding-left: 15px;
+        padding-right: 15px;
+        height: 40px;
+    }
+    .form-control { 
+        padding-left: 15px;
+        padding-right: 15px;
+        height: 40px;
+    }
+    .form-check-label {font-size: 13px;}
+    .login-btn {
+        width: 100%;
+        height: 44px;
+        border: 2px solid #FF6A38;
+        background-color: #FF6A38;
+        font-weight: 600;
+        line-height: 26px;
+        font-size: 16px;
+    }
+    .login-secondary {
+        background-color: #FFFFFF; 
+        color: #FF6A38 !important;
+    }
+    .login-btn:hover {
+        background-color: #0055FF;
+        border-color: #0055FF;
+        color: #FFFFFF !important;
+    }
+    .tms-brand-text {
+        height: 250px;
+        color: #FFFFFF;
+        margin-top: 200px;
+    }
+    .powered-by {
+        margin-top: 170px;
+        margin-bottom: 32px;
+    }
+    .powered-by p {
+        font-size: 12px;
+        color: #FFFFFF;
+        text-align: center;
+        padding-bottom: 10px;
+        color: rgba(255,255,255,0.75);
+    }
+
+    @media (max-width: 768px) {
+    .login-left {
+        padding-left: 40px;
+        padding-right: 40px;
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+        
+    }
