@@ -1,0 +1,707 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melaq</title>
+    <!-- Add Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f9fc;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            color: #2c4257;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        /* Header Styles with Background Image */
+        .header {
+            text-align: left; /* Align text to the left */
+            padding: 150px 0 150px 50px; /* Add left padding */
+            background-image: url("{% static 'images/12.jpg'%}"); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            color: white;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark overlay for better text visibility */
+        }
+
+        .header h1 {
+            font-size: 4rem; /* Larger font size for the main heading */
+            font-weight: bold;
+            margin-bottom: 10px; /* Reduce margin between h1 elements */
+            position: relative;
+            z-index: 1;
+            color: #ffffff; /* White color for the main heading */
+            text-transform: uppercase; /* Uppercase text */
+            letter-spacing: 2px; /* Spacing between letters */
+        }
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 2rem; /* الحجم عند عرض الجوال */
+    }
+}
+        .header p {
+            font-size: 1.5rem; /* Larger font size for the paragraph */
+            max-width: 800px;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            color: #ffffff; /* White color for the paragraph */
+            line-height: 1.8; /* Adjust line height for better readability */
+        }
+
+        /* Navigation Menu Styles */
+        nav {
+            background-color: #f3fbfe; /* Blue color matching the file */
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .logo img {
+            height: 60px; /* Adjust the height to match the file */
+            width: auto; /* Maintain aspect ratio */
+        }
+
+        .nav-links {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center; /* Align items vertically */
+        }
+
+        .nav-links li {
+            margin: 0 15px;
+        }
+
+        .nav-links li a {
+            color: #4a6fa0;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center; /* Align icon and text vertically */
+        }
+
+        .nav-links li a:hover {
+            color: #007BFF; /* Light gray on hover */
+        }
+
+        .nav-links li a i {
+            margin-right: 8px; /* Space between icon and text */
+        }
+
+        /* Hamburger Menu Icon (Hidden by Default) */
+        .menu-icon {
+            display: none; /* Hidden on larger screens */
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #4a6fa0;
+        }
+
+        /* Responsive Styles for Mobile */
+        @media (max-width: 768px) {
+            /* Show Hamburger Menu Icon */
+            .menu-icon {
+                display: block; /* Show on mobile */
+            }
+
+            /* Hide Nav Links by Default */
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background-color: #f3fbfe;
+                position: absolute;
+                top: 80px; /* Adjust based on nav height */
+                left: 0;
+                padding: 10px 0;
+            }
+
+            .nav-links li {
+                margin: 10px 0;
+                text-align: center;
+            }
+
+            /* Show Nav Links when Menu Icon is Clicked */
+            .nav-links.active {
+                display: flex;
+            }
+        }
+
+        /* Section Styles */
+        .section {
+            margin-bottom: 60px;
+            padding: 40px 20px;
+            background-color: #f5f9fc;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #2c4257; /* Dark blue color for headings */
+            text-transform: uppercase; /* Uppercase text */
+        }
+
+        .section p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4a6fa0; /* Light blue color for paragraphs */
+        }
+
+        /* Our Mission Section Styles */
+        .sectionMission {
+            margin-bottom: 60px;
+            padding: 40px 20px;
+            background-color: #0b3565; /* Dark blue background color */
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            display: flex; /* Use Flexbox for layout */
+            justify-content: space-between; /* Space between h2 and p */
+            align-items: flex-start; /* Align items to the top */
+            padding-bottom: 150px;
+            padding-top: 150px;
+        }
+
+        .sectionMission h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0; /* Remove margin to align with the top */
+            color: rgb(255, 255, 255); /* White color for the heading */
+            font-weight: bold; /* Bold text */
+            text-transform: uppercase; /* Uppercase text */
+            letter-spacing: 2px; /* Spacing between letters */
+            width: 30%; /* Set width for the heading */
+        }
+
+        .sectionMission p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgb(255, 255, 255); /* White color for the paragraph */
+            width: 65%; /* Set width for the paragraph */
+            margin: 0; /* Remove default margin */
+        }
+
+        /* Our Services Section Styles */
+        .sectionService {
+            margin-bottom: 60px;
+            padding: 40px 20px;
+            background-color: rgb(255, 255, 255); /* White background color */
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            display: flex; /* Use Flexbox for layout */
+            justify-content: space-between; /* Space between h2 and p */
+            align-items: flex-start; /* Align items to the top */
+            padding-bottom: 150px;
+            padding-top: 150px;
+        }
+
+        .sectionService h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0; /* Remove margin to align with the top */
+            color: #2c4257; /* Dark blue color for the heading */
+            font-weight: bold; /* Bold text */
+            text-transform: uppercase; /* Uppercase text */
+            letter-spacing: 2px; /* Spacing between letters */
+            width: 30%; /* Set width for the heading */
+        }
+
+        .sectionService p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #2c4257; /* Dark blue color for the paragraph */
+            width: 65%; /* Set width for the paragraph */
+            margin: 0; /* Remove default margin */
+        }
+
+        /* Explore Our Services Section Styles */
+        #explore-services {
+            text-align: center; /* Center align the content */
+        }
+
+        .services-list {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: space-around; /* Distribute items evenly */
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+        }
+
+        .services-list li {
+            background-color: #f4f4f4;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center; /* Align icon and text vertically */
+            flex-direction: column; /* Stack icon and text vertically */
+            width: 200px; /* Set a fixed width for each item */
+            text-align: center; /* Center align text */
+        }
+
+        .services-list li i {
+            font-size: 2rem; /* Larger icon size */
+            margin-bottom: 10px; /* Space between icon and text */
+            color: #2c4257; /* Dark blue color for icons */
+        }
+
+        .services-list li span {
+            font-size: 1.1rem;
+            color: #4a6fa0; /* Light blue color for text */
+        }
+
+        /* Special Offer Section with Background Image */
+        .special-offer {
+            text-align: center;
+            padding: 100px 20px;
+            background-image: url("{% static 'images/13.jpg'%}"); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            color: white;
+            position: relative;
+        }
+
+        .special-offer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark overlay for better text visibility */
+        }
+
+        .special-offer h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .special-offer p {
+            font-size: 1.2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Download Section Styles */
+        .download-section {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: #f4f4f4;
+        }
+
+        .download-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #2c4257; /* Dark blue color for heading */
+        }
+
+        .download-section p {
+            font-size: 1.2rem;
+            margin-bottom: 40px; /* Space below the paragraph */
+        }
+
+        .download-buttons {
+            display: flex;
+            justify-content: center; /* Center the buttons */
+            gap: 20px; /* Space between buttons */
+        }
+
+        .download-button {
+            display: inline-block;
+            background-color: transparent; /* Transparent background */
+            border: none;
+            padding: 0;
+            transition: transform 0.3s ease; /* Add a hover effect */
+        }
+
+        .download-button img {
+            height: 50px; /* Adjust the height of the images */
+            width: auto; /* Maintain aspect ratio */
+        }
+
+        .download-button:hover {
+            transform: scale(1.1); /* Slightly enlarge the image on hover */
+        }
+
+        /* Why Choose Us Section Styles */
+        .why-choose-us {
+            background-color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .why-choose-us h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #2c4257; /* Dark blue color for heading */
+            text-transform: uppercase; /* Uppercase text */
+        }
+
+        .why-choose-us p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4a6fa0; /* Light blue color for paragraph */
+            max-width: 800px;
+            margin: 0 auto 40px; /* Center the paragraph and add space below */
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around; /* Distribute features evenly */
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            gap: 20px; /* Space between features */
+        }
+
+        .feature {
+            background-color: #f5f9fc; /* Light background color */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            width: 30%; /* Set width for each feature */
+            text-align: left; /* Align text to the left */
+        }
+
+        .feature h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #2c4257; /* Dark blue color for subheading */
+        }
+
+        .feature p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #4a6fa0; /* Light blue color for paragraph */
+        }
+
+        /* Footer Styles */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #0f193f; /* Dark background color */
+            color: white; /* White text color */
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center align content */
+            gap: 20px; /* Space between sections */
+        }
+
+        .footer-logo img {
+            height: 112px; /* Adjust the height of the logo */
+            width: auto; /* Maintain aspect ratio */
+        }
+
+        .footer-contact p,
+        .footer-links a,
+        .footer-copyright p {
+            margin: 5px 0; /* Space between lines */
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Space between links */
+        }
+
+        .footer-links a {
+            color: #f3fbfe; /* Light blue color for links */
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease; /* Smooth color transition on hover */
+        }
+
+        .footer-links a:hover {
+            color: #007BFF; /* Light blue color on hover */
+            text-decoration: underline; /* Underline on hover */
+        }
+
+        .footer-copyright {
+            margin-top: 20px; /* Space above the copyright text */
+        }
+
+        .footer p {
+            margin: 10px 0; /* Space between paragraphs */
+        }
+
+        .footer a {
+            color: #f3fbfe; /* Light blue color for links */
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease; /* Smooth color transition on hover */
+        }
+
+        .footer a:hover {
+            color: #007BFF; /* Light blue color on hover */
+            text-decoration: underline; /* Underline on hover */
+        }
+
+        /* Logo Styles */
+        .logo img {
+            height: 80px;
+            width: auto;
+        }
+
+        /* Who We Are Section Specific Styles */
+        .who-we-are-section {
+            text-align: center; /* Center align the content */
+        }
+
+        .who-we-are-section .logo {
+            margin-bottom: 20px; /* Space below the logo */
+        }
+
+        .who-we-are-section h2 {
+            font-size: 2.5rem;
+            color: #2c4257; /* Dark blue color for heading */
+            margin-bottom: 20px;
+        }
+
+        .who-we-are-section p {
+            font-size: 1.1rem;
+            color: #4a6fa0; /* Light blue color for paragraph */
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto; /* Center the paragraph */
+        }
+
+        /* Our Mission Section Styles for Mobile */
+@media (max-width: 768px) {
+    .sectionMission {
+        flex-direction: column; /* Stack content vertically */
+        padding: 20px; /* Reduce padding */
+        padding-bottom: 60px; /* Adjust bottom padding */
+        padding-top: 60px; /* Adjust top padding */
+    }
+
+    .sectionMission h2 {
+        width: 100%; /* Full width for heading */
+        font-size: 2rem; /* Smaller font size */
+        margin-bottom: 20px; /* Add space below heading */
+    }
+
+    .sectionMission p {
+        width: 100%; /* Full width for paragraph */
+        font-size: 1rem; /* Smaller font size */
+    }
+}
+
+/* Our Services Section Styles for Mobile */
+@media (max-width: 768px) {
+    .sectionService {
+        flex-direction: column; /* Stack content vertically */
+        padding: 20px; /* Reduce padding */
+        padding-bottom: 60px; /* Adjust bottom padding */
+        padding-top: 60px; /* Adjust top padding */
+    }
+
+    .sectionService h2 {
+        width: 100%; /* Full width for heading */
+        font-size: 2rem; /* Smaller font size */
+        margin-bottom: 20px; /* Add space below heading */
+    }
+
+    .sectionService p {
+        width: 100%; /* Full width for paragraph */
+        font-size: 1rem; /* Smaller font size */
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav>
+        <a class="logo" href="#">
+            <img src="{% static 'assets/web/images/mlogo.png'%}" class="logo" alt="Malaq Logo"/>
+        </a>
+        <!-- Hamburger Menu Icon for Mobile -->
+        <div class="menu-icon" id="menu-icon">
+            <i class="fas fa-bars"></i> <!-- Font Awesome bars icon -->
+        </div>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#who-we-are">About</a></li>
+            <li><a href="#our-services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-user"></i> <!-- User icon from Font Awesome -->
+                    Log in
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Header Section with Background Image -->
+    <div class="header">
+        <h1>Your<br>Laundry,<br>Your way</h1>
+        <p>Welcome to Malaq, your premier destination for all your laundry needs. We are dedicated to connecting you with top-notch laundry services that will leave your clothes fresh, clean, and revitalized.</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Who We Are Section -->
+        <div class="section who-we-are-section" id="who-we-are">
+            <a class="logo" href="#">
+                <img src="{% static 'assets/web/images/mlogo.png'%}" class="logo" alt="Malaq Logo"/>
+            </a>
+            <h2>Who We Are</h2>
+            <p>At Malaq, we are revolutionizing the way you do laundry by connecting you with a variety of trusted laundries in your area. Our platform allows you to choose the laundry service that best suits your needs, whether it’s for everyday washing, delicate fabric care, or specialized treatments.</p>
+        </div>
+
+        <!-- Our Mission Section -->
+        <div class="sectionMission" id="our-mission">
+            <h2>Our Mission</h2>
+            <p>Providing fast, reliable, and hassle-free laundry delivery, ensuring your clothes are cleaned and returned to you with the highest level of care and convenience. With a commitment to quality and customer satisfaction, we make laundry effortless—so you can focus on what matters most.</p>
+        </div>
+
+        <!-- Our Services Section -->
+        <div class="sectionService" id="our-services">
+            <h2>Our Services</h2>
+            <p>Enjoy the convenience of choosing from a variety of nearby laundries or even top-rated laundries that suit your preferences. Whether you need everyday washing or specialized fabric care, we’ve got you covered.
+            Simply select your preferred laundry, place your order, and let us handle the rest with our fast and reliable delivery service. Fresh, clean clothes delivered straight to your doorstep with ease and efficiency!</p>
+        </div>
+
+        <!-- Explore Our Services Section -->
+        <div class="section" id="explore-services">
+            <h2>Explore Our Services</h2>
+            <p>Experience convenient nearby services with fast delivery. We ensure a seamless and satisfying experience right at your doorstep!</p>
+            <ul class="services-list">
+                <li>
+                    <i class="fas fa-tshirt"></i> <!-- Washing icon -->
+                    <span>Washing</span>
+                </li>
+                <li>
+                    <i class="fas fa-tshirt"></i> <!-- Dry Clean icon -->
+                    <span>Dry Clean</span>
+                </li>
+                <li>
+                    <i class="fas fa-tshirt"></i> <!-- Ironing icon -->
+                    <span>Ironing</span>
+                </li>
+                <li>
+                    <i class="fas fa-truck"></i> <!-- Delivery icon -->
+                    <span>Delivery</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Special Offer Section with Background Image -->
+        <div class="special-offer">
+            <h2>Special Offer on The APP</h2>
+            <p>Get It While It Lasts</p>
+        </div>
+
+        <!-- Download Section -->
+        <div class="download-section">
+            <h2>Download on the App Store</h2>
+            <p>GET IT ON Google Play</p>
+            <div class="download-buttons">
+                <a href="#" class="download-button">
+                    <img src="{% static 'images/apple-en.svg' %}" alt="App Store"> <!-- Replace with your App Store image -->
+                </a>
+                <a href="#" class="download-button">
+                    <img src="{% static 'images/google-en.svg' %}" alt="Google Play"> <!-- Replace with your Google Play image -->
+                </a>
+            </div>
+        </div>
+
+        <!-- Why Choose Us Section -->
+        <div class="section why-choose-us" id="why-choose-us">
+            <h2>Why Choose Malaq</h2>
+            <p>Our brand offers a fast and reliable laundry delivery service, effortlessly connecting you with nearby laundries. With us, you can conveniently select your preferred laundry and enjoy quick delivery right to your doorstep!</p>
+            <div class="features">
+                <div class="feature">
+                    <h3>Affordable Services</h3>
+                    <p>We understand the value of your time, which is why we offer seamless and hassle-free laundry solutions tailored to your schedule and preference with competitive prices.</p>
+                </div>
+                <div class="feature">
+                    <h3>Fast Delivery Experience</h3>
+                    <p>Quick clothing delivery that ensures convenience and speed, similar to services in the restaurant industry.</p>
+                </div>
+                <div class="feature">
+                    <h3>User-Friendly App</h3>
+                    <p>Our smartphone application features a simple and easy-to-navigate interface, allowing you to find nearby laundries with ease.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer" id="contact">
+        <div class="footer-content">
+            <!-- Add Logo -->
+            <div class="footer-logo">
+                <img src="{% static 'images/mlogo2.png' %}" alt="Malaq Logo" class="logo">
+            </div>
+            <div class="footer-contact">
+                <p>123-456-7890</p>
+                <p>info@melaq.com</p>
+                <p>Saudi Arabia</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Accessibility Statement</a>
+            </div>
+            <div class="footer-copyright">
+                <p>© 2025 by Melaq.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Hamburger Menu -->
+    <script>
+        // Toggle Nav Links on Menu Icon Click
+        const menuIcon = document.getElementById('menu-icon');
+        const navLinks = document.getElementById('nav-links');
+
+        menuIcon.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

@@ -13,7 +13,7 @@ class PaymentMethod(models.Model):
     ]
 
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100, choices=PAYMENT_CHOICES, unique=True) 
+    name = models.CharField(max_length=100, choices=PAYMENT_CHOICES) 
     description = models.TextField(blank=True, null=True)  # وصف طريقة الدفع (اختياري)
     is_active = models.BooleanField(default=True)  # حالة تفعيل طريقة الدفع
     default = models.BooleanField(default=False) 

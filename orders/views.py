@@ -118,20 +118,29 @@ class getPaymentMethodViewSet(viewsets.ModelViewSet):
     queryset = PaymentMethod.objects.all()
     serializer_class = PaymentMethodSerializer
 
-    def create(self, request, *args, **kwargs):
-        payment_method_user = request.data.get('user')
+    def list(self, request, *args, **kwargs):
+        """ جلب طريقة الدفع الافتراضية بناءً على معرف المستخدم """
+        
+        user_id = request.query_params.get('user')  # استلام `user` من الـ URL
+        print(f"🔹 تم استقبال user_id: {user_id}")  # طباعة معرف المستخدم لفحصه
 
-        # تحقق مما إذا كانت طريقة الدفع موجودة بالفعل
+        if not user_id:
+            return Response({'detail': 'يرجى تحديد معرف المستخدم (user) في الرابط'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            existing_payment_method = PaymentMethod.objects.filter(user_id=payment_method_user,default=True,is_active=True).first()
+            existing_payment_method = PaymentMethod.objects.filter(user_id=user_id, default=True, is_active=True).first()
+            print(f"🔹 نتيجة البحث عن طريقة الدفع: {existing_payment_method}")  # طباعة النتيجة لفحصها
+
             if existing_payment_method:
                 serializer = self.get_serializer(existing_payment_method)
                 return Response(serializer.data, status=status.HTTP_200_OK)
-        except existing_payment_method.DoesNotExist:
-            serializer = []
-            return Response(serializer.data, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({'detail': 'dont have payemnt defoult'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'لم يتم العثور على طريقة دفع افتراضية'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            print(f"❌ خطأ في جلب بيانات الدفع: {e}")  # طباعة أي خطأ يحدث
+            return Response({'error': 'حدث خطأ غير متوقع في السيرفر'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class PaymentMethodViewSet(viewsets.ModelViewSet):
     queryset = PaymentMethod.objects.all()
@@ -139,13 +148,14 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         payment_method_name = request.data.get('name')
-
+        payment_method_user = request.data.get('user')
+        
         # تحقق مما إذا كانت طريقة الدفع موجودة بالفعل
-        existing_payment_method = PaymentMethod.objects.filter(name=payment_method_name).first()
+        existing_payment_method = PaymentMethod.objects.filter(name=payment_method_name,user_id=payment_method_user).first()
 
         if existing_payment_method:
             # إذا كانت موجودة، ضبط جميع طرق الدفع كغير افتراضية
-            PaymentMethod.objects.all().update(default=False)
+            # PaymentMethod.objects.all().update(default=False)
             # ضبط القيمة المختارة كافتراضية
             existing_payment_method.default = True
             existing_payment_method.save()
@@ -153,7 +163,7 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             # إذا لم تكن موجودة، ضبط جميع طرق الدفع كغير افتراضية
-            PaymentMethod.objects.all().update(default=False)
+            # PaymentMethod.objects.all().update(default=False)
 
             # إضافة القيمة الجديدة
             serializer = self.get_serializer(data=request.data)
@@ -161,6 +171,8 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
             self.perform_create(serializer)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 class PaymentMethodsDetailsViewSet(viewsets.ModelViewSet):
     queryset = PaymentMethodsDetails.objects.all()
     serializer_class = PaymentMethodsDetailsSerializer
@@ -364,7 +376,11 @@ class OrderItemView(viewsets.ModelViewSet):
         serializer = self.serializer_class(items, many=True)
         return Response(serializer.data)
 
-
+import logging
+logger = logging.getLogger(__name__)
+logger.debug("هذه رسالة تصحيحية")
+logger.info("هذه رسالة معلوماتية")
+logger.error("هذه رسالة خطأ")
 
 class OrderStatusUpdateView(generics.UpdateAPIView):
     queryset = Order.objects.all()
@@ -375,7 +391,9 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
         new_status = request.data.get('status')
         delivery_profit = request.data.get('delivery_profit')
         _delivery_profit=0
-
+        logger.debug("هذه رسالة تصحيحية")
+        logger.info("هذه رسالة معلوماتية")
+        logger.error("هذه رسالة خطأ")
         # التحقق من الحالة الجديدة
         valid_statuses = [
             "pending",
@@ -395,6 +413,7 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
         user_id = request.data.get('user_id')
         sales_agent = SalesAgent.objects.get(user_id=user_id)
 
+
         if new_status not in valid_statuses:
             return Response({'error': 'Invalid status update.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -406,14 +425,14 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
         # تحقق من الحالة الحالية قبل التحديث
         if (order.status == 'pending' and new_status == 'courier_accepted'):
             order.status = 'courier_accepted'
-            order.sales_agent = sales_agent
+            order.sales_agent_id = sales_agent.id
 
             # إنشاء عملية مالية جديدة
             Transaction.objects.create(
                 user_id=user_id,
                 transaction_type='deposit',
-                amount=sales_agent,
-                debit=sales_agent,
+                amount=order.total_amount,
+                debit=order.total_amount,
                 credit=0,
                 description='ارباح توصيل مندوب'
             )
@@ -481,8 +500,8 @@ class OrderStatusUpdateLaundryView(generics.UpdateAPIView):
             Transaction.objects.create(
                 user_id=user_id,
                 transaction_type='deposit',
-                amount=_profit,
-                debit=_profit,
+                amount=order.total_amount,
+                debit=order.total_amount,
                 credit=0,
                 description='قيمة طلب معين'
             )
@@ -492,8 +511,8 @@ class OrderStatusUpdateLaundryView(generics.UpdateAPIView):
             Transaction.objects.create(
                 user_id=user_id,
                 transaction_type='deposit',
-                amount=_profit,
-                debit=_profit,
+                amount=order.total_amount,
+                debit=order.total_amount,
                 credit=0,
                 description='قيمة طلب معين'
             )            

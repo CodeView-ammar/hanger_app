@@ -1,16 +1,19 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import LaundryOrdersByDateRange, LaundryViewSet,UserLaundryMarkViewSet ,user_laundry_mark_detail,user_laundry_mark_list,user_laundry_mark_delete
-# ,LaundryServiceViewSet
+
+from services.views import LaundryServiceViewSet,ServiceCategoryViewSet,SubServiceViewSet
 from .views import add_laundry
 from .views import LaundryListByUser
 from .views import OrderLaundryListView
 
 router = DefaultRouter()
 router.register(r'laundries', LaundryViewSet)
-# router.register(r'User-Laundry-Mark', UserLaundryMarkViewSet)
+router.register(r'categores', ServiceCategoryViewSet)
 router.register(r'user_laundry_marks', UserLaundryMarkViewSet)
-# router.register(r'laundry-services', LaundryServiceViewSet)
+router.register(r'laundry-services', LaundryServiceViewSet)
+router.register(r'subservices', SubServiceViewSet, basename='subservice')
+
 urlpatterns = [
     path('', include(router.urls)),
     # path('user_laundry_marks/', user_laundry_mark_list, name='user_laundry_mark_list'),

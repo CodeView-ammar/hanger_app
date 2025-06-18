@@ -1,0 +1,3 @@
+default._domainkey	IN	TXT	( "v=DKIM1; h=sha256; k=rsa; "
+	  "p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy2PDI3e8fs5HVRPotZ8MTbcp4LF7wvbK9Px+tL9AzwNqz1M4tn/FwJet3UzwIB3F/9VmQMrMNlfadbvRSsuhKZuv2eG1jGHcC17Y49i+IfgSD7QPH3zPqcfw69CRONPRtNgzgHgOFZSwvAnYBbhSi6+rZWwAgGs4amu+mj4NAqcC8vD6Ykl9YWZ+HRAidyL5Ti3oS+5YBu526t"
+	  "Y8uYbRswy/Ss/E38hxr/DM6PAQNmVMdyu6NWSYiful+Qh1jv6JJPwLbFz2mbmyQTldxWerONO2X8+vWUBcIdX/ed3Y3JRvyv9KJPyUZsgFXwkhLClwdt2fC/5Vn/4mdc5E5UQ5QwIDAQAB" )  ; ----- DKIM key default for hangerapp.com.sa

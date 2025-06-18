@@ -17,6 +17,7 @@ router.register(r'submit-order', CreateOrderView,basename='submit-order')
 router.register(r'orders-user', OrderListView,basename='view-order')
 router.register(r'orders-laundry', OrderDetailsView,basename='view-laundry-order')
 router.register(r'orders-items', OrderItemView, basename='orders-items')
+router.register(r'getPaymentMethodViewSet', getPaymentMethodViewSet, basename='getPaymentMethodViewSet')
 
 urlpatterns = [
     path('', include(router.urls)),

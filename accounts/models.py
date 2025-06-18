@@ -1,17 +1,18 @@
 from django.db import models
 from users.models import Users
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
 class Transaction(models.Model):
     TRANSACTION_TYPES = [
-        ('receipt_voucher', 'سند قبض'),  # إضافة سند قبض
-        ('payment_voucher', 'سند صرف'),  # إضافة سند صرف
-        ('deposit', 'إيداع'),
-        ('withdraw', 'سحب'),
-        ('transfer', 'تحويل'),
-        ('bill_payment', 'دفع فواتير'),
-        ('refund', 'استرداد'),
+        ('receipt_voucher', _('سند قبض')),  # إضافة سند قبض
+        ('payment_voucher',  _('سند صرف')),  # إضافة سند صرف
+        ('deposit',  _('إيداع')),
+        ('withdraw',  _('سحب')),
+        ('transfer',  _('تحويل')),
+        ('bill_payment',  _('دفع فواتير')),
+        ('refund',  _('استرداد')),
     ]
 
     user = models.ForeignKey(Users, on_delete=models.CASCADE)  # المستخدم المرتبط

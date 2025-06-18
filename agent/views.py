@@ -87,10 +87,19 @@ class SalesAgentOrdersByDateRange(generics.ListAPIView):
             end_date = timezone.datetime.fromisoformat(end_date)
         except ValueError:
             raise ValidationError("تاريخ غير صالح، يجب أن يكون بالتنسيق YYYY-MM-DD.")
-        sales_agent = SalesAgent.objects.get(user_id=user_id)
+        
+        # محاولة الحصول على sales_agent
+        sales_agent = SalesAgent.objects.filter(user_id=user_id).first()
+        
+        # إذا لم يوجد sales_agent، إرجاع مجموعة فارغة
+        if not sales_agent:
+            return SalesAgentOrder.objects.none()
+        
         # فلترة الطلبات بناءً على تاريخ البدء والانتهاء ورقم المستخدم
-        return SalesAgentOrder.objects.filter(assigned_date__range=(start_date, end_date), sales_agent=sales_agent)
-
+        return SalesAgentOrder.objects.filter(
+            assigned_date__range=(start_date, end_date),
+            sales_agent=sales_agent
+        )
 
 class OrderAgentListView(generics.ListAPIView):
     serializer_class = OrderAgentSerializer
@@ -99,16 +108,25 @@ class OrderAgentListView(generics.ListAPIView):
 
       
         return Order.objects.filter(status__in=['pending', 'delivery_by_courier',])
+
+from rest_framework import generics
 class OrderAgentAcceptedListView(generics.ListAPIView):
     serializer_class = OrderAgentSerializer
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
-        try:
-            sales_agent = SalesAgent.objects.get(user_id=user_id)
-            return Order.objects.filter(sales_agent_id=sales_agent,status__in=['courier_accepted', 'courier_on_the_way','picked_up_from_customer', 'courier_accepted_delivery',
-                                                'delivered_to_customer', 'courier_on_the_way'])
-
-        except ValueError:
-            raise ValidationError("المندوب غير موجود")
-       
+        sales_agent = SalesAgent.objects.filter(user_id=user_id).first()
+        
+        if sales_agent:
+            return Order.objects.filter(
+                sales_agent_id=sales_agent.id,
+                status__in=[
+                    'courier_accepted',
+                    'courier_on_the_way',
+                    'picked_up_from_customer',
+                    'courier_accepted_delivery',
+                    'delivered_to_customer'
+                ]
+            )
+        
+        return Order.objects.none()  # إرجاع مجموعة فارغة

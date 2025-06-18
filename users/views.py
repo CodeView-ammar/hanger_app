@@ -1,10 +1,12 @@
 from .models import Users,Address
-
 from .serializers import UsersSerializer,AddressSerializer
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import render
+from rest_framework.views import APIView
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Users.objects.all()
@@ -20,7 +22,13 @@ class UserViewSet(viewsets.ModelViewSet):
                 return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         
         return Response({'detail': 'Phone number is required.'}, status=status.HTTP_400_BAD_REQUEST)
-
+    def destroy(self, request, pk=None):
+        try:
+            user = Users.objects.get(id=pk)  # احصل على المستخدم بناءً على الـ pk
+            user.delete()  # احذف المستخدم
+            return Response(status=status.HTTP_204_NO_CONTENT)  # إرجاع حالة 204
+        except Users.DoesNotExist:
+            return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def user_phone(request, phone):
@@ -44,18 +52,13 @@ def user_phone_login(request, phone):
     except Users.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
     
-from django.shortcuts import render
 
 def user_management(request):
     return render(request, 'users/user_management.html')
 
 
 
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework import viewsets
-from .models import Address
-from .serializers import AddressSerializer
+
 
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
@@ -108,7 +111,6 @@ class AddressViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Address.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-from rest_framework.views import APIView
 class AddressDetailView(APIView):
     def get(self, request, user_id):
         try:
@@ -117,3 +119,5 @@ class AddressDetailView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Address.DoesNotExist:
             return Response({'error': 'Address not found'}, status=status.HTTP_404_NOT_FOUND)
+
+

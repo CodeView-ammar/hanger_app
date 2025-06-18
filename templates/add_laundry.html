@@ -7,8 +7,8 @@
     <style>
         body {
             background-color: #f4f4f4;
-            direction: rtl;  /* التأكد من كتابة النص من اليمين */
-            text-align: right;  /* محاذاة النص إلى اليمين */
+            direction: rtl;
+            text-align: right;
             font-family: Arial, sans-serif;
         }
         .container {
@@ -56,6 +56,9 @@
         }
         button:hover {
             background-color: #0f0a7d;
+        }
+        #map {
+            height: 400px; /* تأكد من تحديد ارتفاع الخريطة */
         }
     </style>
 </head>
@@ -111,8 +114,77 @@
                 {% endif %} 
             </div>
 
+            <div class="form-group">
+                <label for="x_map">الإحداثيات X</label>
+                <input type="text" name="x_map" id="x_map" value="{{ form.x_map.value|default:'' }}" class="form-control" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="y_map">الإحداثيات Y</label>
+                <input type="text" name="y_map" id="y_map" value="{{ form.y_map.value|default:'' }}" class="form-control" readonly>
+            </div>
+
+            <div id="map"></div>
+
             <button type="submit">إضافة</button>
+            <button type="button" id="locateMe">تحديد موقعي</button>
         </form>
     </div>
+
+    <script>
+        let map, marker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 0, lng: 0},
+                zoom: 2
+            });
+
+            marker = new google.maps.Marker({
+                position: {lat: 0, lng: 0},
+                map: map,
+                draggable: true // جعل العلامة قابلة للسحب
+            });
+
+            google.maps.event.addListener(map, 'click', function(event) {
+                marker.setPosition(event.latLng);
+                document.getElementById('x_map').value = event.latLng.lat(); // تعيين قيمة x_map
+                document.getElementById('y_map').value = event.latLng.lng(); // تعيين قيمة y_map
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function(event) {
+                document.getElementById('x_map').value = event.latLng.lat(); // تعيين قيمة x_map
+                document.getElementById('y_map').value = event.latLng.lng(); // تعيين قيمة y_map
+            });
+        }
+
+        document.getElementById('locateMe').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    map.setCenter(pos);
+                    marker.setPosition(pos);
+                    document.getElementById('x_map').value = pos.lat; // تعيين قيمة x_map
+                    document.getElementById('y_map').value = pos.lng; // تعيين قيمة y_map
+                }, function() {
+                    handleLocationError(true, map.getCenter());
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false, map.getCenter());
+            }
+        });
+
+        function handleLocationError(browserHasGeolocation, pos) {
+            alert(browserHasGeolocation ?
+                  'خطأ: فشل الحصول على موقعك.' :
+                  'خطأ: متصفحك لا يدعم خاصية تحديد الموقع.');
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAF2Uo1kHze6N9E8xAwEcrp5Mqw0ol0ekk&callback=initMap" async defer></script>
 </body>
 </html>

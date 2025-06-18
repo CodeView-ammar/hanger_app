@@ -4,6 +4,8 @@ from rest_framework.exceptions import ValidationError
 
 from orders.models import LaundryOrder, Order
 from rest_framework import viewsets
+from services.models import LaundryService, Service
+from settings.models import Setting
 from .models import Laundry
 from .serializers import LaundryOrderSerializer, LaundrySerializer, LaundrySerializerUser
 from rest_framework.decorators import api_view
@@ -27,6 +29,18 @@ from rest_framework.exceptions import ValidationError
 class LaundryViewSet(viewsets.ModelViewSet):
     queryset = Laundry.objects.all()
     serializer_class = LaundrySerializer
+
+    def list(self, request):
+        search_query = request.query_params.get('search', None)
+        if search_query:
+            # استخدام البحث باستخدام %نصوص%
+            queryset = self.queryset.filter(name__icontains=search_query , is_active=True )  # استبدل 'name' باسم الحقل الذي تريد البحث فيه
+        else:
+            queryset = self.queryset.filter(is_active=True ) 
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def retrieve(self, request, pk=None):
         try:
             laundry = self.get_object()  # Get the specific laundry instance
@@ -34,7 +48,7 @@ class LaundryViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)  # Return the serialized data
         except Laundry.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)  # Handle not found
-
+        
 class UserLaundryMarkViewSet(viewsets.ModelViewSet):
     queryset = UserLaundryMark.objects.all()
     serializer_class = UserLaundryMarkSerializer
@@ -137,7 +151,16 @@ def add_laundry(request):
             laundry.is_active = False  # Optionally set the owner's name
             
             laundry.save()  # Now save the laundry instance
-
+              # Add services only if they don't exist already
+            services = Service.objects.all()
+            for service in services:
+                # Check if the LaundryService already exists
+                if not LaundryService.objects.filter(laundry=laundry, service=service).exists():
+                    LaundryService.objects.create(
+                        laundry=laundry,  # Rely on the object instance
+                        service=service
+                    )
+            
             return redirect('success')  # Redirect to the success page or required page
     else:
         form = LaundryForm()
@@ -185,10 +208,7 @@ class OrderLaundryListView(generics.ListAPIView):
     def get_queryset(self):
 
         laundry_id = self.kwargs['laundry_id']
-        print("W"*90)
-        print(laundry_id)
-        print(Order.objects.filter(laundry_id=laundry_id))
-        print("W"*90)
+        
         return Order.objects.filter(laundry_id=laundry_id, status__in=['delivered_to_laundry', 'in_progress','ready_for_delivery','delivered_to_customer'])
 
 

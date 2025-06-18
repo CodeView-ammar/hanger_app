@@ -22,7 +22,7 @@ from .models import Users  # Adjust the import based on your app structure
 
 class UserAdmin(BaseUserAdmin):
     model = Users
-    list_display = ('name','username', 'email', 'phone', 'role', 'is_laundry_owner', 'is_staff', 'is_active')
+    list_display = ('id','name','username', 'email', 'phone', 'role', 'is_laundry_owner', 'is_staff', 'is_active')
     list_filter = ('is_staff', 'is_active', 'role')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),

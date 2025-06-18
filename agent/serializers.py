@@ -23,6 +23,11 @@ class SalesAgentOrderSerializer(serializers.ModelSerializer):
 
 
 class OrderAgentSerializer(serializers.ModelSerializer):
+    laundry_name = serializers.CharField(source='laundry.name', read_only=True)
+
     class Meta:
         model = Order
-        fields = '__all__'  # يمكنك تحديد الحقول التي تريد إرجاعها هنا
+        fields = ['id', 'user', 'laundry_name', 'order_date', 'total_amount', 'status', 'pickup_date', 'delivery_date', 'payment_status', 'payment_method', 'sales_agent']
+    # class Meta:
+    #     model = Order
+    #     fields = '__all__'  # يمكنك تحديد الحقول التي تريد إرجاعها هنا

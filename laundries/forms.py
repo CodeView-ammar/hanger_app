@@ -14,6 +14,8 @@ class LaundryForm(forms.ModelForm):
             'phone', 
             'email', 
             'image', 
+            'x_map',  # Add these fields
+            'y_map',
         ]
         def clean_phone(self):
             phone = self.cleaned_data.get('phone')
@@ -25,4 +27,9 @@ class LaundryForm(forms.ModelForm):
             email = self.cleaned_data.get('email')
             if Laundry.objects.filter(email=email).exists():
                 raise ValidationError("البريد الإلكتروني موجود بالفعل.")
+        # def clean_name(self):
+        #     phone = self.cleaned_data.get('phone')
+        #     if Users.objects.filter(username=phone).exists():
+        #         raise ValidationError("رقم الهاتف موجود بالفعل.")
+        #     return phone
             
