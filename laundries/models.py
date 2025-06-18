@@ -13,7 +13,7 @@ class Laundry(models.Model):
     y_map = models.CharField(max_length=100)
     phone = models.CharField(max_length=20)
     email = models.EmailField()
-    image = models.ImageField(upload_to='laundry_images/', blank=True, null=True)  # Add Imag
+    image = models.FileField(upload_to='laundry_images/', blank=True, null=True)  # Add Imag
     membership_start_date = models.DateField(null=True, blank=True)  # تاريخ بداية العضوية
     membership_end_date = models.DateField(null=True, blank=True)    # تاريخ نهاية العضوية
     sales_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)  # Allow null

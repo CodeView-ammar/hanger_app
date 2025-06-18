@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from services.models import LaundryService, Service
 from .models import Laundry
 from .models import Laundry, LaundryHours,UserLaundryMark
 
@@ -9,15 +11,26 @@ class LaundryHoursInline(admin.TabularInline):  # Use StackedInline for a vertic
     model = LaundryHours
     extra = 1  # Number of empty forms to display
 
-# class LaundryServiceInline(admin.TabularInline):  # يمكنك استخدام StackedInline إذا كنت تفضل ذلك
-#     model = LaundryService
-#     extra = 1  # عدد الصفوف الفارغة لإضافة خدمات جديدة
-#     fields = ('service', 'name', 'price', 'urgent_price', 'duration')  # الحقول التي ترغب في عرضها
-#     # يمكنك إضافة أي خيارات أخرى حسب الحاجة
 @admin.register(Laundry)
 class LaundryAdmin(admin.ModelAdmin):
     list_display = ('owner', 'name', 'address', 'phone', 'email', 'created_at', 'updated_at','owner_id')
     inlines = [LaundryHoursInline]  # إضافة Inlines لنموذجي الخدمات وساعات العمل
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Laundry)
+def after_laundry_save(sender, instance, created, **kwargs):
+    if created:
+        # عند إنشاء كائن Laundry جديد، نقوم بإنشاء LaundryService لجميع الخدمات
+        services = Service.objects.all()
+        for service in services:
+            LaundryService.objects.create(
+                laundry=instance,  # ربط الخدمة الجديدة بـ laundry
+                service=service
+            )
+    else:
+        LaundryService.objects.filter(laundry=instance).update(laundry=instance)
 
 
 @admin.register(UserLaundryMark)

@@ -32,9 +32,9 @@ class SalesAgent(models.Model):
     email = models.EmailField(unique=True)
     region = models.CharField(max_length=100)
     id_number = models.CharField(max_length=20, unique=True)  # رقم الهوية
-    id_image = models.ImageField(upload_to='id_images/', validators=[validate_file_size])  # صورة الهوية
+    id_image = models.FileField(upload_to='id_images/', validators=[validate_file_size])  # صورة الهوية
     license_number = models.CharField(max_length=20)  # رقم الرخصة
-    license_image = models.ImageField(upload_to='license_images/', validators=[validate_file_size])  # صورة الرخصة
+    license_image = models.FileField(upload_to='license_images/', validators=[validate_file_size])  # صورة الرخصة
     city = models.CharField(max_length=20, choices=CITY_CHOICES)  # المدينة
     vehicle_type = models.CharField(max_length=20, choices=VEHICLE_TYPE_CHOICES)  # نوع السيارة
     	
@@ -45,7 +45,6 @@ class SalesAgent(models.Model):
         # Resize and save id_image
         if self.id_image:
             img = Image.open(self.id_image)
-            # Resize to a smaller size (e.g., 150x150 pixels)
             img = img.resize((1024, 1024), Image.LANCZOS)  # Use LANCZOS for high-quality resizing
             img_io = io.BytesIO()
             img.save(img_io, format='JPEG')  # Save as JPEG
@@ -61,20 +60,20 @@ class SalesAgent(models.Model):
             img_file = ContentFile(img_io.getvalue(), name=self.license_image.name)
             self.license_image = img_file  # Assign resized image to license_image field
 
-        # Create a new user in the Users table
-        user = Users(
-            name=self.name,
-            username=self.phone,  # Use phone as username
-            email=self.email,
-            phone=self.phone,
-            role='carriers',  # Set the appropriate role
-            password=self.phone,  # Use phone as password (consider hashing it)
-            is_active=False,  # Set to inactive initially
-        )
+        # Create a new user only if this is a new SalesAgent instance
+        if not self.pk:  # Check if the instance is new
+            user = Users(
+                name=self.name,
+                username=self.phone,  # Use phone as username
+                email=self.email,
+                phone=self.phone,
+                role='carriers',  # Set the appropriate role
+                password=self.phone,  # Use phone as password (consider hashing it)
+                is_active=False,  # Set to inactive initially
+            )
+            user.save()  # Save the new user
+            self.user = user  # Set the user field
 
-        user.save()  # Save the new user
-        # Link the user to the SalesAgent
-        self.user = user  # Set the user field
-        super().save(*args, **kwargs)  # Save again to update the user field
+        super().save(*args, **kwargs)  # Save the SalesAgent instance
     def __str__(self):
         return self.name
