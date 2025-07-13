@@ -199,20 +199,30 @@ class LaundryListByUser(generics.ListAPIView):
 
 
 
-
+from rest_framework import generics
 from .serializers import OrderLaundrySerializer
+from orders.models import Order  # تأكد من أن المسار صحيح
 
 class OrderLaundryListView(generics.ListAPIView):
     serializer_class = OrderLaundrySerializer
 
     def get_queryset(self):
-
         laundry_id = self.kwargs['laundry_id']
-        
-        return Order.objects.filter(laundry_id=laundry_id, status__in=['delivered_to_laundry', 'in_progress','ready_for_delivery','delivered_to_customer'])
 
-
-
+        return (
+            Order.objects
+            .select_related('user', 'payment_method')
+            .prefetch_related('items', 'payment_details')
+            .filter(
+                laundry_id=laundry_id,
+                status__in=[
+                    'delivered_to_laundry',
+                    'in_progress',
+                    'ready_for_delivery',
+                    'delivered_to_customer',
+                ]
+            )
+        )
 class LaundryOrdersByDateRange(generics.ListAPIView):
     serializer_class = LaundryOrderSerializer
 
