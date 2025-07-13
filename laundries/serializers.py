@@ -42,10 +42,10 @@ class LaundrySerializerUser(serializers.ModelSerializer):
 
 
 
-class OrderLaundrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = '__all__'  # يمكنك تحديد الحقول التي تريد إرجاعها هنا
+# class OrderLaundrySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Order
+#         fields = '__all__'  # يمكنك تحديد الحقول التي تريد إرجاعها هنا
 
 
 
@@ -53,3 +53,40 @@ class LaundryOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = LaundryOrder
         fields = '__all__'  # أو يمكنك تحديد الحقول التي تريد عرضها
+
+
+
+
+from rest_framework import serializers
+from orders.models import Order, OrderItem
+from users.models import Users, Address
+from users.serializers import UsersSerializer  # تأكد من وجود هذا السيريالايزر أو أنشئه
+from services.serializers import ServiceSerializer  # لعناصر الطلب
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = '__all__'
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    service = ServiceSerializer()
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'service', 'service_type', 'quantity', 'price', 'notes']
+
+
+class OrderLaundrySerializer(serializers.ModelSerializer):
+    user = UsersSerializer()
+    address = serializers.SerializerMethodField()
+    items = OrderItemSerializer(many=True)
+    
+    class Meta:
+        model = Order
+        fields = '__all__'  # أو حدد الحقول المطلوبة بشكل يدوي
+
+    def get_address(self, obj):
+        address = Address.objects.filter(user=obj.user).first()
+        return AddressSerializer(address).data if address else None

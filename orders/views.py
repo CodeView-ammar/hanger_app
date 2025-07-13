@@ -298,8 +298,32 @@ class CreateOrderView(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+from rest_framework.views import APIView
 
+class CustomerReceiveOrderView(APIView):
+    def patch(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'error': 'الطلب غير موجود'}, status=status.HTTP_404_NOT_FOUND)
 
+        # if order.status != 'courier_accepted_end':
+        #     return Response({'error': f'لا يمكن تغيير الحالة من {order.status} إلى customer_received'}, status=status.HTTP_400_BAD_REQUEST)
+
+        order.status = 'delivered_to_customer'
+        order.save()
+
+        # إذا أردت تسجيل عملية مالية عند استلام العميل، يمكنك تفعيل هذا الجزء:
+        # Transaction.objects.create(
+        #     user_id=order.user_id,
+        #     transaction_type='deposit',
+        #     amount=order.total_amount,
+        #     debit=order.total_amount,
+        #     credit=0,
+        #     description='استلام العميل للطلب'
+        # )
+
+        return Response({'success': 'تم تحديث حالة الطلب إلى استلام العميل'}, status=status.HTTP_200_OK)
 
 class OrderListView(viewsets.ModelViewSet):
     queryset = Order.objects.all()  # تحديد الاستعلام الافتراضي
@@ -376,11 +400,7 @@ class OrderItemView(viewsets.ModelViewSet):
         serializer = self.serializer_class(items, many=True)
         return Response(serializer.data)
 
-import logging
-logger = logging.getLogger(__name__)
-logger.debug("هذه رسالة تصحيحية")
-logger.info("هذه رسالة معلوماتية")
-logger.error("هذه رسالة خطأ")
+
 
 class OrderStatusUpdateView(generics.UpdateAPIView):
     queryset = Order.objects.all()
@@ -391,9 +411,7 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
         new_status = request.data.get('status')
         delivery_profit = request.data.get('delivery_profit')
         _delivery_profit=0
-        logger.debug("هذه رسالة تصحيحية")
-        logger.info("هذه رسالة معلوماتية")
-        logger.error("هذه رسالة خطأ")
+        print("W"*90)
         # التحقق من الحالة الجديدة
         valid_statuses = [
             "pending",

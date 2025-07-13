@@ -1,7 +1,7 @@
 # urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CartViewSet, OrderDetailsView, OrderItemView, OrderListView, OrderStatusView, PaymentMethodsDetailsViewSet,remove_item_from_cart,getPaymentMethodViewSet,PaymentMethodViewSet,CreateOrderView,OrderStatusUpdateView,OrderStatusUpdateLaundryView
+from .views import CartViewSet, OrderDetailsView,CustomerReceiveOrderView, OrderItemView, OrderListView, OrderStatusView, PaymentMethodsDetailsViewSet,remove_item_from_cart,getPaymentMethodViewSet,PaymentMethodViewSet,CreateOrderView,OrderStatusUpdateView,OrderStatusUpdateLaundryView
 
 router = DefaultRouter()
 router.register(r'carts', CartViewSet, basename='cart')
@@ -30,5 +30,5 @@ urlpatterns = [
     path('order/<int:pk>/update-status/', OrderStatusUpdateView.as_view(), name='order-status-update'),
     # تحديث حالة الطلب عن طريق المغسلة
     path('order/<int:pk>/update-laundryorder/', OrderStatusUpdateLaundryView.as_view(), name='order-status-Laundry-update'),
-
+    path('order/<int:order_id>/customer-receive/', CustomerReceiveOrderView.as_view(), name='order-customer-receive'),
 ]
