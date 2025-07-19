@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt.token_blacklist',
-    'django_admin_listfilter_dropdown',
+    'channels',
 
     # التطبيقات الخاصة بك
     'users',
@@ -44,7 +44,19 @@ INSTALLED_APPS = [
     'notification',
     'agent',
     'accounts',
+    'support',
+    'import_export',
 ]
+
+ASGI_APPLICATION='hanger_app.asgi.application'
+# إعدادات قنوات
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
 
 # الوسيطات
 MIDDLEWARE = [

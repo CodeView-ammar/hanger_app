@@ -52,7 +52,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = 'user','laundry','order_date','total_amount','status','pickup_date','delivery_date','payment_status','payment_method','items' 
+        fields = ['id','user','laundry','order_date','total_amount','status','pickup_date','delivery_date','payment_status','payment_method','items','delivery_method','delegate_note','sales_agent'] 
 
 class OrderCustomSerializer(serializers.ModelSerializer):
     # إضافة اسم المغسلة

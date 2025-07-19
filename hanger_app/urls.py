@@ -14,14 +14,16 @@ from django.conf.urls.i18n import i18n_patterns
 # )
 urlpatterns = ([
     # path('admin/', admin.site.urls),
-    path('api/', include('users.urls')),
+        path('api/', include('users.urls')),
     path('api/', include('laundries.urls')),  # Include your app's URLs
     path('api/', include('settings.urls')),  # Include your app's URLs
-    path('api/', include('notification.urls')),
+    path('api/notifications/', include('notification.urls')),
+    path('api/reviews/', include('reviews.urls')),
     path('api/', include('services.urls')),
     path('api/', include('orders.urls')),
     path('api/', include('accounts.urls')),
     path('api/', include('agent.urls')),
+    path('api/', include('support.urls')),
     path('', include('website.urls')),
     
     # path('api/', include('invoices.urls')),

@@ -5,7 +5,7 @@ from .views import LaundryOrdersByDateRange, LaundryViewSet,UserLaundryMarkViewS
 from services.views import LaundryServiceViewSet,ServiceCategoryViewSet,SubServiceViewSet
 from .views import add_laundry
 from .views import LaundryListByUser
-from .views import OrderLaundryListView
+from .views import OrderLaundryListView,LaundryHoursViewSet
 
 router = DefaultRouter()
 router.register(r'laundries', LaundryViewSet)
@@ -13,7 +13,7 @@ router.register(r'categores', ServiceCategoryViewSet)
 router.register(r'user_laundry_marks', UserLaundryMarkViewSet)
 router.register(r'laundry-services', LaundryServiceViewSet)
 router.register(r'subservices', SubServiceViewSet, basename='subservice')
-
+router.register(r'laundry-hours', LaundryHoursViewSet, basename='laundry-hours')
 urlpatterns = [
     path('', include(router.urls)),
     # path('user_laundry_marks/', user_laundry_mark_list, name='user_laundry_mark_list'),
@@ -26,6 +26,7 @@ urlpatterns = [
     path('laundries/<int:laundry_id>/orders/', OrderLaundryListView.as_view(), name='laundry-orders'),
     path('laundry-orders/date-range/from/<str:start_date>/to/<str:end_date>/user/<int:user_id>/', 
      LaundryOrdersByDateRange.as_view(), name='laundry-orders-by-date-range'),
+    # path('laundries/<int:laundryId>/working-hours/', LaundryHoursViewSet.as_view(), name='laundries_by_hour'),
 ]
 
 

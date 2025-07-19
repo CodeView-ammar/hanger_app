@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Users
+from users.models import Users,Wallet
 from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
@@ -22,7 +22,40 @@ class Transaction(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)  # المبلغ
     debit = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # حقل المدين
     credit = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # حقل الدائن
+    malaq_ratio = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # حقل الدائن
     description = models.TextField()                             # وصف العملية
 
     def __str__(self):
         return f"{self.transaction_type} - {self.amount} - {self.user.username}"
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from decimal import Decimal
+
+@receiver(post_save, sender=Transaction)
+def update_wallet_balance(sender, instance, created, **kwargs):
+    if created:  # تحقق مما إذا كانت العملية قد أنشئت
+        wallet = Wallet.objects.get(user=instance.user)
+
+        # تحويل instance.amount إلى Decimal لضمان العمليات الحسابية الصحيحة
+        amount = Decimal(instance.amount)
+
+        if instance.transaction_type == 'receipt_voucher':
+            wallet.balance += amount  # إضافة المبلغ إلى الرصيد
+        elif instance.transaction_type == 'payment_voucher':
+            wallet.balance -= amount  # خصم المبلغ من الرصيد
+        elif instance.transaction_type == 'deposit':
+            wallet.balance += amount  # إضافة المبلغ إلى الرصيد
+        elif instance.transaction_type == 'withdraw':
+            wallet.balance -= amount  # خصم المبلغ من الرصيد
+        # elif instance.transaction_type == 'transfer':
+        #     # في حالة التحويل، يمكن أن تتطلب من حسابين
+        #     # تحتاج إلى منطق إضافي هنا
+        #     pass
+        elif instance.transaction_type == 'bill_payment':
+            wallet.balance -= amount  # خصم المبلغ من الرصيد
+        elif instance.transaction_type == 'refund':
+            wallet.balance += amount  # إضافة المبلغ إلى الرصيد
+
+        wallet.save()  # حفظ التغييرات في المحفظة
