@@ -16,14 +16,14 @@ class Laundry(models.Model):
     image = models.FileField(upload_to='laundry_images/', blank=True, null=True)  # Add Imag
     membership_start_date = models.DateField(null=True, blank=True)  # تاريخ بداية العضوية
     membership_end_date = models.DateField(null=True, blank=True)    # تاريخ نهاية العضوية
-    sales_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)  # Allow null
+    sales_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=0)  # Allow null
     is_hidden = models.BooleanField(default=False)  # حقل إخفاء المغسلة
     is_active = models.BooleanField(default=True)  # حقل إيقاف المغسلة
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def save(self, *args, **kwargs):
         # تعيين القيمة الافتراضية من جدول الإعدادات
-        if self.sales_percentage is None:  # إذا لم يتم تعيين القيمة
+        if self.sales_percentage == 0:  # إذا لم يتم تعيين القيمة
             try:
                 setting = Setting.objects.get(key='default_sales_percentage')  # استخدم المفتاح المناسب
                 self.sales_percentage = setting.sales_percentage

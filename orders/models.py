@@ -58,9 +58,11 @@ class Order(models.Model):
     pickup_date = models.DateTimeField(null=True, blank=True)
     delivery_date = models.DateTimeField(null=True, blank=True)
     payment_status = models.CharField(max_length=10, choices=[('paid', 'Paid'),('unpaid', 'Unpaid'),], default='unpaid')
+    
     payment_method= models.ForeignKey(PaymentMethod,on_delete=models.CASCADE)
     sales_agent = models.ForeignKey(SalesAgent, on_delete=models.SET_NULL,null=True, blank=True)
-
+    delivery_method = models.CharField(max_length=50, null=True, blank=True)  # حقل طريقة التسليم
+    delegate_note = models.TextField(null=True, blank=True)  # حقل ملاحظات المندوب
     def __str__(self):
         return f'Order {self.id} by {self.user.username}'
     

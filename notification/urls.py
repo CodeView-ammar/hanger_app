@@ -1,11 +1,11 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import NotificationViewSet
-
-# إنشاء الراوتر وتسجيل ViewSet
-router = DefaultRouter()
-router.register(r'notifications', NotificationViewSet, basename='notification')
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),  # تضمين جميع URLs من الراوتر
+    path('user/<int:user_id>/', views.NotificationListView.as_view(), name='user-notifications'),
+    path('user/<int:user_id>/unread-count/', views.unread_notifications_count, name='unread-count'),
+    path('user/<int:user_id>/mark-all-read/', views.mark_all_notifications_read, name='mark-all-read'),
+    path('<int:notification_id>/mark_as_read/', views.mark_notification_read, name='mark-read'),
+    path('<int:notification_id>/delete/', views.delete_notification, name='delete-notification'),
+    path('create/', views.create_notification, name='create-notification'),
 ]

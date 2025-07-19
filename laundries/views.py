@@ -6,8 +6,8 @@ from orders.models import LaundryOrder, Order
 from rest_framework import viewsets
 from services.models import LaundryService, Service
 from settings.models import Setting
-from .models import Laundry
-from .serializers import LaundryOrderSerializer, LaundrySerializer, LaundrySerializerUser
+from .models import Laundry,LaundryHours
+from .serializers import LaundryOrderSerializer,LaundryHoursSerializer, LaundrySerializer, LaundrySerializerUser
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -249,7 +249,15 @@ class LaundryOrdersByDateRange(generics.ListAPIView):
 
 
 
+class LaundryHoursViewSet(viewsets.ModelViewSet):
+    queryset = LaundryHours.objects.all()
+    serializer_class = LaundryHoursSerializer
 
+    @action(detail=False, methods=['get'], url_path='laundries/(?P<laundry_id>[^/.]+)/working-hours')
+    def get_laundry_hours(self, request, laundry_id=None):
+        hours = LaundryHours.objects.filter(laundry_id=laundry_id)
+        serializer = self.get_serializer(hours, many=True)
+        return Response(serializer.data)
 
 
 

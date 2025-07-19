@@ -2,6 +2,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import CartViewSet, OrderDetailsView,CustomerReceiveOrderView, OrderItemView, OrderListView, OrderStatusView, PaymentMethodsDetailsViewSet,remove_item_from_cart,getPaymentMethodViewSet,PaymentMethodViewSet,CreateOrderView,OrderStatusUpdateView,OrderStatusUpdateLaundryView
+from .courier_views import CourierOrderViewSet
 
 router = DefaultRouter()
 router.register(r'carts', CartViewSet, basename='cart')
@@ -18,6 +19,7 @@ router.register(r'orders-user', OrderListView,basename='view-order')
 router.register(r'orders-laundry', OrderDetailsView,basename='view-laundry-order')
 router.register(r'orders-items', OrderItemView, basename='orders-items')
 router.register(r'getPaymentMethodViewSet', getPaymentMethodViewSet, basename='getPaymentMethodViewSet')
+router.register(r'courier-orders', CourierOrderViewSet, basename='courier-orders')
 
 urlpatterns = [
     path('', include(router.urls)),

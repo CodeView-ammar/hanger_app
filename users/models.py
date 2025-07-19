@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 class Users(AbstractUser):
     ROLE_CHOICES = [
         ('admin', 'Admin'),
@@ -48,3 +49,23 @@ class Address(models.Model):
 
     def __str__(self):
         return f'Address for {self.user.username}'
+    
+
+
+class Wallet(models.Model):
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)  # المستخدم المرتبط
+    owner_name = models.CharField(max_length=100)  # اسم المالك
+    balance = models.DecimalField(max_digits=10, decimal_places=2)  # الرصيد الحالي
+    created_at = models.DateTimeField(auto_now_add=True)  # تاريخ الإنشاء
+    updated_at = models.DateTimeField(auto_now=True)  # تاريخ التحديث
+    status = models.CharField(max_length=20, choices=[('active', 'نشطة'), ('closed', 'مغلقة')])  # حالة المحفظة
+    notes = models.TextField(blank=True, null=True)  # ملاحظات
+
+    def __str__(self):
+        return f"{self.owner_name} - {self.balance}"
+
+@receiver(post_save, sender=Users)
+def create_user_wallet(sender, instance, created, **kwargs):
+    if created:  # تحقق مما إذا كان المستخدم جديدًا
+        Wallet.objects.create(user=instance, owner_name=instance.username,
+        balance=0,status='active',notes='')  # إنشاء محفظة جديدة

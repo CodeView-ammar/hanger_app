@@ -9,6 +9,9 @@ from .serializers import CartSerializer, OrderCustomSerializer, OrderItemSeriali
 from .serializers import OrderSerializer, OrderItemSerializer
 from .serializers import OrderStatusUpdateSerializer
 from agent.models import SalesAgent
+from laundries.models import Laundry
+from settings.models import Setting
+from decimal import Decimal
     
 
 
@@ -410,7 +413,9 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
         order = self.get_object()
         new_status = request.data.get('status')
         delivery_profit = request.data.get('delivery_profit')
-        _delivery_profit=0
+        _delivery_profit=0.0
+        if delivery_profit is None:
+            delivery_profit=0
         print("W"*90)
         # التحقق من الحالة الجديدة
         valid_statuses = [
@@ -439,21 +444,23 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
         if order.status == 'delivered_to_laundry':
             return Response({'error': 'Cannot change status from delivered_to_laundry.'}, status=status.HTTP_400_BAD_REQUEST)
 
-      
+        # if (order.status == 'picked_up_from_customer' and new_status == 'delivered_to_laundry'):
+        #     _delivery_profit=float(delivery_profit)
+        #     if _delivery_profit is None:
+        #         _delivery_profit=0
+        #     Transaction.objects.create(
+        #         user_id=user_id,
+        #         transaction_type='deposit',
+        #         amount=_delivery_profit,
+        #         debit=_delivery_profit,
+        #         credit=0,
+        #         description='ارباح توصيل مندوب'
+        #     )
         # تحقق من الحالة الحالية قبل التحديث
         if (order.status == 'pending' and new_status == 'courier_accepted'):
             order.status = 'courier_accepted'
             order.sales_agent_id = sales_agent.id
-
-            # إنشاء عملية مالية جديدة
-            Transaction.objects.create(
-                user_id=user_id,
-                transaction_type='deposit',
-                amount=order.total_amount,
-                debit=order.total_amount,
-                credit=0,
-                description='ارباح توصيل مندوب'
-            )
+           
         elif (order.status == 'courier_accepted' and new_status == 'courier_on_the_way'):
             order.status = 'courier_on_the_way'
         elif (order.status == 'courier_on_the_way' and new_status == 'picked_up_from_customer'):
@@ -461,6 +468,26 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
         elif (order.status == 'picked_up_from_customer' and new_status == 'delivered_to_laundry'):
             order.status = 'delivered_to_laundry'
             _delivery_profit=delivery_profit
+            _delivery_profit=Decimal(delivery_profit)
+            if _delivery_profit is None:
+                _delivery_profit=0
+            Transaction.objects.create(
+                user_id=user_id,
+                transaction_type='deposit',
+                amount=_delivery_profit,
+                debit=_delivery_profit,
+                credit=0,
+                description='ارباح توصيل مندوب'
+            )
+             # إنشاء عملية مالية جديدة
+            # Transaction.objects.create(
+            #     user_id=user_id,
+            #     transaction_type='deposit',
+            #     amount=_delivery_profit,
+            #     debit=_delivery_profit,
+            #     credit=0,
+            #     description='ارباح توصيل مندوب'
+            # )
         else:
             return Response({'error': f'Status cannot be updated from {order.status} to {new_status}.'}, status=status.HTTP_400_BAD_REQUEST)
        
@@ -503,8 +530,14 @@ class OrderStatusUpdateLaundryView(generics.UpdateAPIView):
        # منع التحديث إذا كانت الحالة الحالية هي delivered_to_laundry
         if order.status == 'completed':
             return Response({'error': 'Cannot change status from completed.'}, status=status.HTTP_400_BAD_REQUEST)
-
-      
+        laundry = Laundry.objects.get(owner_id=user_id)
+        sales_percentage = laundry.sales_percentage
+        
+        settings = Setting.objects.first()
+        if settings:
+            sales_percentage_setting=settings.sales_percentage
+        if sales_percentage is None:
+            sales_percentage=sales_percentage_setting
         # تحقق من الحالة الحالية قبل التحديث
         if (order.status == 'delivered_to_laundry' and new_status == 'in_progress'):
             order.status = 'in_progress'
@@ -520,6 +553,7 @@ class OrderStatusUpdateLaundryView(generics.UpdateAPIView):
                 transaction_type='deposit',
                 amount=order.total_amount,
                 debit=order.total_amount,
+                malaq_ratio=order.total_amount*(sales_percentage/100),
                 credit=0,
                 description='قيمة طلب معين'
             )
@@ -531,6 +565,8 @@ class OrderStatusUpdateLaundryView(generics.UpdateAPIView):
                 transaction_type='deposit',
                 amount=order.total_amount,
                 debit=order.total_amount,
+                malaq_ratio=order.total_amount*(sales_percentage/100),
+
                 credit=0,
                 description='قيمة طلب معين'
             )            
