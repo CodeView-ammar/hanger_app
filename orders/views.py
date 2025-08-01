@@ -551,8 +551,8 @@ class OrderStatusUpdateLaundryView(generics.UpdateAPIView):
             Transaction.objects.create(
                 user_id=user_id,
                 transaction_type='deposit',
-                amount=order.total_amount,
-                debit=order.total_amount,
+                amount=order.total_amount-(order.total_amount*(sales_percentage/100)),
+                debit=order.total_amount-(order.total_amount*(sales_percentage/100)),
                 malaq_ratio=order.total_amount*(sales_percentage/100),
                 credit=0,
                 description='قيمة طلب معين'
@@ -563,8 +563,8 @@ class OrderStatusUpdateLaundryView(generics.UpdateAPIView):
             Transaction.objects.create(
                 user_id=user_id,
                 transaction_type='deposit',
-                amount=order.total_amount,
-                debit=order.total_amount,
+                amount=order.total_amount-(order.total_amount*(sales_percentage/100)),
+                debit=order.total_amount-(order.total_amount*(sales_percentage/100)),
                 malaq_ratio=order.total_amount*(sales_percentage/100),
 
                 credit=0,

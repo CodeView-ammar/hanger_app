@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-29 14:40-0500\n"
+"POT-Creation-Date: 2025-07-30 01:53+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,23 +19,23 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
-#: accounts/admin.py:16
+#: accounts/admin.py:41
 msgid "Date Range"
 msgstr ""
 
-#: accounts/admin.py:21
+#: accounts/admin.py:46
 msgid "Today"
 msgstr "اليوم"
 
-#: accounts/admin.py:22
+#: accounts/admin.py:47
 msgid "This Week"
 msgstr "هذا الاسبوع"
 
-#: accounts/admin.py:23
+#: accounts/admin.py:48
 msgid "This Month"
 msgstr "هذا الشهر"
 
-#: accounts/admin.py:24
+#: accounts/admin.py:49
 msgid "This Year"
 msgstr "هذه السنة"
 
@@ -55,10 +55,6 @@ msgstr ""
 msgid "سحب"
 msgstr ""
 
-#: accounts/models.py:13
-msgid "تحويل"
-msgstr ""
-
 #: accounts/models.py:14
 msgid "دفع فواتير"
 msgstr ""
@@ -67,10 +63,197 @@ msgstr ""
 msgid "استرداد"
 msgstr ""
 
-#: hanger_app/settings.py:105
+#: accounts/models.py:28
+msgid "Transaction"
+msgstr "العملية"
+
+#: accounts/models.py:29
+msgid "Transactions"
+msgstr "العمليات"
+
+#: agent/models.py:82
+msgid "SalesAgent"
+msgstr "المندوب"
+
+#: agent/models.py:83
+msgid "SalesAgents"
+msgstr "المناديب"
+
+#: hanger_app/settings.py:119
 msgid "العربية"
 msgstr ""
 
-#: hanger_app/settings.py:106
-msgid "الإنجليزية"
-msgstr ""
+#: laundries/models.py:52
+msgid "Laundry"
+msgstr "مغسلة"
+
+#: laundries/models.py:53
+msgid "Laundrys"
+msgstr "المغاسل"
+
+#: laundries/models.py:72 laundries/models.py:73
+msgid "LaundryHours"
+msgstr "ساعات دوام المغسلة"
+
+#: notification/models.py:22
+msgid "Notification"
+msgstr "إشعار"
+
+#: notification/models.py:23
+msgid "Notifications"
+msgstr "الإشعارات"
+
+#: orders/models.py:25
+msgid "PaymentMethod"
+msgstr "طريقة الدفع"
+
+#: orders/models.py:26
+msgid "PaymentMethods"
+msgstr "طرق الدفع"
+
+#: orders/models.py:34 orders/models.py:35
+msgid "PaymentMethodsDetails"
+msgstr "تفاصيل طريقة الدفع"
+
+#: orders/models.py:75
+msgid "Order"
+msgstr "طلب"
+
+#: orders/models.py:76
+msgid "Orders"
+msgstr "الطلبات"
+
+#: orders/models.py:93 orders/models.py:94
+msgid "OrderItem"
+msgstr "اصناف الطلب"
+
+#: orders/models.py:113
+msgid "Cart"
+msgstr "السلة"
+
+#: orders/models.py:127
+
+msgid "LaundryOrder"
+msgstr "طلبات المغسلة"
+
+#: orders/models.py:128
+
+msgid "LaundryOrders"
+msgstr "طلبات المغسلة"
+
+#: orders/models.py:149
+msgid "PaymentDetail"
+msgstr "تفاصيل الدفع"
+
+#: orders/models.py:150
+msgid "PaymentDetails"
+msgstr "تفاصيل الدفع"
+
+#: orders/models.py:160
+msgid "SalesAgentOrder"
+msgstr "طلبات المندوب"
+
+#: orders/models.py:161
+msgid "SalesAgentOrders"
+msgstr "طلبات المندوب"
+
+#: reviews/models.py:54
+msgid "LaundryReview"
+msgstr "تقيم المغسلة"
+
+#: reviews/models.py:55
+msgid "LaundryReviews"
+msgstr "تقيمات المغاسل"
+
+#: services/models.py:12
+msgid "ServiceCategory"
+msgstr "تصنيف الخدمة"
+
+#: services/models.py:13
+msgid "ServiceCategorys"
+msgstr "تصنيفات الخدمات"
+
+#: services/models.py:33
+msgid "Service"
+msgstr "الخدمة"
+
+#: services/models.py:34
+msgid "Services"
+msgstr "الخدمات"
+
+#: services/models.py:51
+
+msgid "LaundryService"
+msgstr "خدمات المغسلة"
+
+#: services/models.py:52
+msgid "LaundryServices"
+msgstr "خدمات المغسلة"
+
+#: services/models.py:61
+msgid "SubService"
+msgstr "خدمة فرعية"
+
+#: services/models.py:62
+msgid "SubServices"
+msgstr "الخدمات الفرعية"
+
+#: settings/models.py:13
+msgid "Setting"
+msgstr "متغيرات الاعدادات"
+
+#: settings/models.py:14
+msgid "Settings"
+msgstr "الاعدادات العامة"
+
+#: settings/models.py:28
+msgid "SlideShowImage"
+msgstr "صور السلايد بار في التطبيق"
+
+#: settings/models.py:29
+msgid "SlideShowImages"
+msgstr "صور السلايد بار في التطبيق"
+
+#: settings/models.py:42
+msgid "AppSettings"
+msgstr "اعدادت التطبيق"
+
+#: settings/models.py:64
+msgid "AppVersion"
+msgstr "الاصدار"
+
+#: settings/models.py:65
+msgid "AppVersions"
+msgstr "اصدارات التطبيق"
+
+#: settings/models.py:76
+msgid "OTPAPI"
+msgstr "OTP API"
+
+#: settings/models.py:77
+msgid "OTPAPIs"
+msgstr "OTP API"
+
+#: users/models.py:52
+msgid "Address"
+msgstr "العنوان"
+
+#: users/models.py:53
+msgid "Addresss"
+msgstr "العناوين"
+
+#: users/models.py:69
+msgid "Wallet"
+msgstr "محفظة"
+
+#: users/models.py:70
+msgid "Wallets"
+msgstr "المحفظات"
+
+#: users/models.py:88
+msgid "TransferRequest"
+msgstr "طلب تحويل"
+
+#: users/models.py:89
+msgid "TransferRequests"
+msgstr "طلبات التحويل"

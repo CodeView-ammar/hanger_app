@@ -1,0 +1,118 @@
+<!-- لغة الصفحة واتجاهها -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>سياسة الخصوصية | تطبيق معلاق</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- خطّ عربي جميل (Tajawal) -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body{font-family:'Tajawal',sans-serif;}
+    </style>
+</head>
+
+<body class="bg-slate-50 flex flex-col min-h-screen">
+
+    <!-- 🔹 Header / شريط علوي -->
+    <header class="bg-gradient-to-l from-indigo-700 to-indigo-600 text-white shadow">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="/" class="text-2xl font-bold tracking-wide">
+                <span class="inline-block align-middle">مَـعـلَاق</span>
+            </a>
+
+            <nav class="hidden md:flex gap-8 text-lg font-medium">
+                <a href="/" class="hover:text-indigo-200 transition">الرئيسية</a>
+                <a href="/about" class="hover:text-indigo-200 transition">عن التطبيق</a>
+                <a href="/privacy-policy" class="underline underline-offset-4 decoration-white/70">سياسة الخصوصية</a>
+            </nav>
+
+            <!-- زر قائمة الجوال -->
+            <button id="menuBtn" class="md:hidden focus:outline-none">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- قائمة الجوال المتحركة -->
+        <nav id="mobileMenu" class="md:hidden bg-indigo-700 border-t border-indigo-600 hidden">
+            <a href="/" class="block px-6 py-3 hover:bg-indigo-600">الرئيسية</a>
+            <a href="/about" class="block px-6 py-3 hover:bg-indigo-600">عن التطبيق</a>
+            <a href="/privacy-policy" class="block px-6 py-3 bg-indigo-600/50">سياسة الخصوصية</a>
+        </nav>
+    </header>
+
+    <!-- 🔹 Main Content -->
+    <main class="container mx-auto max-w-4xl bg-white rounded-2xl shadow-lg mt-10 mb-16 p-8 leading-relaxed grow">
+        <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">سياسة الخصوصية</h1>
+
+        <p class="text-gray-700 mb-6">
+            نولي خصوصيتك أهمية قصوى، ونسعى دائمًا إلى حماية بياناتك الشخصية. تهدف هذه السياسة إلى توضيح كيفية جمع واستخدام وحماية معلوماتك عند استخدامك لتطبيق <strong>معلاق</strong>.
+        </p>
+
+        <!-- ١ -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-3 text-indigo-700">١. جمع المعلومات</h2>
+            <p>قد نجمع بيانات مثل الاسم، رقم الهاتف، البريد الإلكتروني، الموقع الجغرافي، ومعلومات الجهاز بهدف تحسين مستوى الخدمة.</p>
+        </section>
+
+        <!-- ٢ -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-3 text-indigo-700">٢. استخدام المعلومات</h2>
+            <p>نستعمل بياناتك لتحسين تجربة الاستخدام، تقديم الدعم، تعزيز الأمان، والوفاء بالمتطلبات القانونية.</p>
+        </section>
+
+        <!-- ٣ -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-3 text-indigo-700">٣. مشاركة المعلومات</h2>
+            <p>لا نشارك معلوماتك الشخصية مع أي طرف ثالث إلا بموافقتك، أو حين يلزم ذلك قانونيًا.</p>
+        </section>
+
+        <!-- ٤ -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-3 text-indigo-700">٤. حماية البيانات</h2>
+            <p>نطبّق تدابير تقنية وتنظيمية مناسبة لمنع الوصول غير المصرح به أو إساءة استعمال بياناتك.</p>
+        </section>
+
+        <!-- ٥ -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-3 text-indigo-700">٥. حقوقك</h2>
+            <p>لديك حق الوصول إلى بياناتك أو تعديلها أو طلب حذفها. تواصل معنا عبر البريد الموضح أدناه لممارسة هذه الحقوق.</p>
+        </section>
+
+        <!-- ٦ -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-3 text-indigo-700">٦. التغييرات على السياسة</h2>
+            <p>قد نقوم بتعديل هذه السياسة دوريًا. سيتم إعلامك بأي تحديثات جوهرية من خلال التطبيق أو البريد الإلكتروني.</p>
+        </section>
+
+        <!-- ٧ -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-3 text-indigo-700">٧. الاتصال بنا</h2>
+            <p>للاستفسارات، راسلنا عبر: 
+                <a href="mailto:support@melaq.sa" class="text-indigo-600 hover:underline">support@melaq.sa</a>
+            </p>
+        </section>
+    </main>
+
+    <!-- 🔹 Footer -->
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto text-center text-sm">
+            <p>&copy; {% now "Y" %} جميع الحقوق محفوظة - تطبيق معلاق</p>
+            <p class="mt-1">تصميم وتطوير <a href="#" class="underline text-indigo-300 hover:text-indigo-200 transition">فريق التقنية</a></p>
+        </div>
+    </footer>
+
+    <!-- 🔹 Script: إظهار/إخفاء قائمة الجوال -->
+    <script>
+        const btn   = document.getElementById('menuBtn');
+        const menu  = document.getElementById('mobileMenu');
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

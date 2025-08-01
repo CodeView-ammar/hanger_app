@@ -114,6 +114,21 @@
                 {% endif %} 
             </div>
 
+              <div class="form-group">
+                <label for="{{ form.license_image.id_for_label }}">صورة الرخصة</label>
+                {{ form.license_image }}
+                {% if form.license_image.errors %}
+                    <span class="text-danger">{{ form.license_image.errors }}</span>
+                {% endif %} 
+            </div>
+
+ <div class="form-group">
+                <label for="{{ form.commercial_record_image.id_for_label }}">صورة السجل التجاري</label>
+                {{ form.commercial_record_image }}
+                {% if form.commercial_record_image.errors %}
+                    <span class="text-danger">{{ form.commercial_record_image.errors }}</span>
+                {% endif %} 
+            </div>
             <div class="form-group">
                 <label for="x_map">الإحداثيات X</label>
                 <input type="text" name="x_map" id="x_map" value="{{ form.x_map.value|default:'' }}" class="form-control" readonly>

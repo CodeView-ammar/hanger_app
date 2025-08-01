@@ -1,0 +1,10 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>تحويل الأموال للمحفظة: {{ wallet.owner_name }}</h1>
+<form method="post">{% csrf_token %}
+    <label for="amount">المبلغ:</label>
+    <input type="number" id="amount" name="amount" required>
+    <button type="submit">تحويل</button>
+</form>
+{% endblock %}

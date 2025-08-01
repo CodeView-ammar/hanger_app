@@ -5,6 +5,7 @@ from users.models import Users
 from services.models import Service
 from laundries.models import Laundry
 
+from django.utils.translation import gettext_lazy as _
 
 # class ServiceReview(models.Model):
 #     service = models.ForeignKey(Service, on_delete=models.CASCADE)
@@ -42,13 +43,16 @@ class LaundryReview(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        unique_together = ('laundry', 'user')  # منع المستخدم من تقييم نفس المغسلة أكثر من مرة
-        ordering = ['-created_at']
+
 
     def __str__(self):
         return f'تقييم {self.laundry.name} بواسطة {self.user.username} - {self.rating} نجوم'
 
+    class Meta:
+        unique_together = ('laundry', 'user')  # منع المستخدم من تقييم نفس المغسلة أكثر من مرة
+        ordering = ['-created_at']
+        verbose_name = _("LaundryReview")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("LaundryReviews")  # ترجمة الجمع
     @property
     def average_rating(self):
         """حساب متوسط التقييم للجوانب المختلفة"""

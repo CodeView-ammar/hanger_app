@@ -28,12 +28,33 @@
         h5 {
             color: #28a745; /* لون النجاح */
         }
+        .btn {
+            background-color: #0b3565; /* لون الخلفية */
+            border: none; /* لا حدود */
+            color: white; /* لون النص */
+          padding: 6px 12px;
+            text-align: center; /* توسيط النص */
+            text-decoration: none; /* إزالة التسطير */
+            display: inline-block; /* عرض الزر في السطر */
+            font-size: 12px; /* حجم الخط */
+            margin: 4px 2px; /* هوامش الزر */
+            cursor: pointer; /* تغيير المؤشر عند المرور فوق الزر */
+            border-radius: 4px; /* زوايا دائرية */
+            transition: background-color 0.3s; /* تأثير الانتقال */
+        }
+
+        .btn:hover {
+            background-color: #08294f; /* لون الخلفية عند المرور فوق الزر */
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>تم الإضافة بنجاح</h1>
         <h5>سوف يتم مراجعة بياناتك والتواصل معك</h5>
+        <a href="https://hangerapp.com.sa/ar/admin/login/?next=/ar/admin/" class="add-laundry-btn btn">
+    <i class="fas fa-plus"></i>تسجيل الدخول الى لوحة تحكم المغسلة
+</a>
     </div>
 </body>
 </html>

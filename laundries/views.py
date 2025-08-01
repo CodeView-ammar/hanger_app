@@ -17,6 +17,7 @@ from rest_framework.decorators import action
 from django.shortcuts import render, redirect
 from .forms import LaundryForm
 from users.models import Users
+from django.contrib.auth.models import User
 
 from rest_framework import generics
 
@@ -131,9 +132,13 @@ def add_laundry(request):
             name = form.cleaned_data.get('name')
 
             # Create a new user instance
-            user = Users(
-            name=name,
+            # user = User(
+            # )
+            # user.save()  # حفظ المستخدم الجديد
+            custom_user  = Users(
+                name=name,
                 username=phone,
+                first_name=name,  # يمكنك استخدام الحقول المخصصة حسب الحاجة
                 email=email,
                 phone=phone,
                 role='laundry_owner',
@@ -141,12 +146,13 @@ def add_laundry(request):
                 is_active=False,  # Set to inactive initially
                 is_laundry_owner=True
             )
-            user.save()  # Save the new user
+            custom_user.set_password(phone)  # تعيين كلمة مرور (يجب تشفيرها)
+            custom_user .save()  # Save the new user
 
             # Now create the laundry instance with the new user as the owner
             laundry = form.save(commit=False)  # Don't save yet
-            laundry.owner = user  # Set the owner to the new user
-            laundry.owner_name = user.username  # Optionally set the owner's name
+            laundry.owner = custom_user  # Set the owner to the new user
+            laundry.owner_name = custom_user.username  # Optionally set the owner's name
             laundry.is_hidden = True  # Optionally set the owner's name
             laundry.is_active = False  # Optionally set the owner's name
             

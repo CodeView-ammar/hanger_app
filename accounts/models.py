@@ -10,7 +10,7 @@ class Transaction(models.Model):
         ('payment_voucher',  _('سند صرف')),  # إضافة سند صرف
         ('deposit',  _('إيداع')),
         ('withdraw',  _('سحب')),
-        ('transfer',  _('تحويل')),
+        # ('transfer',  _('تحويل')),
         ('bill_payment',  _('دفع فواتير')),
         ('refund',  _('استرداد')),
     ]
@@ -24,7 +24,9 @@ class Transaction(models.Model):
     credit = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # حقل الدائن
     malaq_ratio = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # حقل الدائن
     description = models.TextField()                             # وصف العملية
-
+    class Meta:
+        verbose_name = _("Transaction")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("Transactions")  # ترجمة الجمع
     def __str__(self):
         return f"{self.transaction_type} - {self.amount} - {self.user.username}"
 
@@ -59,3 +61,11 @@ def update_wallet_balance(sender, instance, created, **kwargs):
             wallet.balance += amount  # إضافة المبلغ إلى الرصيد
 
         wallet.save()  # حفظ التغييرات في المحفظة
+
+class Statistics(models.Model):
+    laundries_count = models.PositiveIntegerField(default=0)  # عدد المغاسل
+    agents_count = models.PositiveIntegerField(default=0)      # عدد المناديب
+    updated_at = models.DateTimeField(auto_now=True)          # تاريخ آخر تحديث
+
+    def __str__(self):
+        return f"Statistics: {self.laundries_count} laundries, {self.agents_count} agents"

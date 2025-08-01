@@ -1,12 +1,16 @@
 from django.db import models
 from laundries.models import Laundry
 
+from django.utils.translation import gettext_lazy as _
 
 
 class ServiceCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)  # اسم الفئة
     description = models.TextField(blank=True, null=True)  # وصف الفئة
 
+    class Meta:
+        verbose_name = _("ServiceCategory")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("ServiceCategorys")  # ترجمة الجمع
     def __str__(self):
         return self.name
     
@@ -25,6 +29,9 @@ class Service(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = _("Service")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("Services")  # ترجمة الجمع
     def __str__(self):
         return self.name
 
@@ -41,13 +48,17 @@ class LaundryService(models.Model):
     
     class Meta:
         unique_together = ('laundry', 'service')  # لضمان عدم تكرار العلاقة
-
+        verbose_name = _("LaundryService")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("LaundryServices")  # ترجمة الجمع
 class SubService(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='sub_services')
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)  # وصف الخدمة الفرعية
     price = models.DecimalField(max_digits=10, decimal_places=2)
     duration = models.IntegerField()  # مدة الخدمة الفرعية بالساعة
-
+    
+    class Meta:
+        verbose_name = _("SubService")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("SubServices")  # ترجمة الجمع
     def __str__(self):
         return self.name

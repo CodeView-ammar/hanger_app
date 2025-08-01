@@ -137,8 +137,7 @@ MEDIA_ROOT = '/root/metasoft/metasoft-ar.com/hanger_app/media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # إعدادات المستخدم
-AUTH_USER_MODEL = 'auth.User'  # يمكنك تغييره إذا أنشأت موديل مستخدم مخصص
-
+AUTH_USER_MODEL = 'users.Users'
 # إعدادات Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

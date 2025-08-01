@@ -19,30 +19,110 @@ class AddressAdmin(ImportExportModelAdmin):
 admin.site.register(Address, AddressAdmin)
 
 
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import Users
 
-class UserAdmin(BaseUserAdmin,ImportExportModelAdmin):
-    model = Users
-    list_display = ('id','name','username', 'email', 'phone', 'role', 'is_laundry_owner', 'is_staff', 'is_active')
-    list_filter = ('is_staff', 'is_active', 'role')
+
+@admin.register(Users)
+class UsersAdmin(BaseUserAdmin,ImportExportModelAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal Info', {'fields': ('name', 'email', 'phone', 'role', 'is_laundry_owner')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important Dates', {'fields': ('last_login',)}),
+        ('المعلومات الشخصية', {'fields': ('name', 'email', 'phone', 'role', 'is_laundry_owner')}),
+        ('الصلاحيات', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('تواريخ مهمة', {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2', 'phone', 'role', 'is_active', 'is_staff')}
-        ),
+            'fields': ('username', 'password1', 'password2', 'name', 'email', 'phone', 'role'),
+        }),
     )
-    search_fields = ('username', 'email', 'phone','name')
+    list_display = ('username', 'email', 'role', 'is_superuser')
+    search_fields = ('username', 'email', 'name', 'phone')
     ordering = ('username',)
-
 # Register the custom user model with the customized admin
-admin.site.register(Users, UserAdmin)
-from django.contrib.auth.models import User, Group
 
 
-# admin.site.unregister(User)
-# admin.site.unregister(Group)
+from django.http import HttpResponseRedirect
+from django.urls import path
+from django.contrib import messages
+from django.utils.html import format_html
+from django.urls import reverse
+from .models import TransferRequest
+from accounts.models import  Transaction
+
+
+
+@admin.register(TransferRequest)
+class TransferRequestAdmin(ImportExportModelAdmin):
+    list_display = ('user', 'amount', 'date_requested',"notes", 'status', 'transfer_button')
+    list_filter = ('status', 'date_requested')  # إضافة الفلترة حسب الحالة والتاريخ
+    search_fields = ('user__username', 'amount')
+    ordering = ('-date_requested',)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('transfer/<int:request_id>/', self.admin_site.admin_view(self.process_transfer), name='process_transfer'),
+        ]
+        return custom_urls + urls
+
+    def process_transfer(self, request, request_id):
+        transfer_request = self.get_object(request, request_id)
+
+        if transfer_request is None:
+            messages.error(request, "طلب التحويل غير موجود.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        if transfer_request.status != 'pending':
+            messages.error(request, "طلب التحويل ليس في حالة جاهزة للتحويل.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        transfer_amount = transfer_request.amount
+
+        # إنشاء سجل جديد في جدول Transaction
+        Transaction.objects.create(
+            user=transfer_request.user,
+            transaction_type='transfer',
+            amount=transfer_amount,
+            debit=0,
+            credit=transfer_amount,
+            description=f"تحويل مبلغ {transfer_amount} من طلب التحويل."
+        )
+
+        # حذف سند الصرف المرتبط إذا كان موجوداً
+        try:
+            transaction = Transaction.objects.get(
+                user=transfer_request.user,
+                transaction_type='payment_voucher',
+                amount=transfer_amount
+            )
+            transaction.delete()  # حذف السند
+            messages.success(request, "تم حذف سند الصرف بنجاح.")
+        except Transaction.DoesNotExist:
+            messages.warning(request, "لم يتم العثور على سند الصرف المطلوب.")
+
+        # تحديث حالة الطلب إلى "completed"
+        transfer_request.status = 'completed'
+        transfer_request.save()
+
+        messages.success(request, "تم تحويل المبلغ بنجاح.")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    def transfer_button(self, obj):
+        if obj.status == 'pending':
+            return format_html(
+                '<a class="button" style="background-color:#28a745; color:white; padding:4px 8px; border-radius:4px;" href="{}">صرف</a>',
+                reverse('admin:process_transfer', args=[obj.id])
+            )
+        return "-"
+
+    transfer_button.short_description = 'صرف'
+        # منع إضافة طلبات جديدة
+    def has_add_permission(self, request):
+        return False
+
+    # منع تعديل الطلبات
+    def has_change_permission(self, request, obj=None):
+        return False

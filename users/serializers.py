@@ -18,3 +18,12 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = '__all__'  
+
+
+from .models import TransferRequest
+
+class TransferRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TransferRequest
+        fields = '__all__'  # أو حدد الحقول يدويًا
+        read_only_fields = ['date_requested', 'status']  # لا يمكن تغييرها من قبل المستخدم

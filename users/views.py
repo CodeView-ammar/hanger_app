@@ -1,6 +1,6 @@
-from .models import Users,Address
-from .serializers import UsersSerializer,AddressSerializer
-from rest_framework import viewsets
+from .models import Users,Address,TransferRequest
+from .serializers import UsersSerializer,AddressSerializer,TransferRequestSerializer
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -111,6 +111,8 @@ class AddressViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Address.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
 class AddressDetailView(APIView):
     def get(self, request, user_id):
         try:
@@ -121,3 +123,11 @@ class AddressDetailView(APIView):
             return Response({'error': 'Address not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
+
+from rest_framework.permissions import AllowAny
+class TransferRequestViewSet(viewsets.ModelViewSet):
+    queryset = TransferRequest.objects.all()
+    serializer_class = TransferRequestSerializer
+    permission_classes = [AllowAny]
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user)

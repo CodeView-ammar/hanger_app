@@ -14,6 +14,8 @@ class LaundryForm(forms.ModelForm):
             'phone', 
             'email', 
             'image', 
+            'license_image', 
+            'commercial_record_image', 
             'x_map',  # Add these fields
             'y_map',
         ]

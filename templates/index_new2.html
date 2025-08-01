@@ -550,7 +550,24 @@
         width: 100%; /* Full width for paragraph */
         font-size: 1rem; /* Smaller font size */
     }
-}
+} .btn {
+            background-color: #0b3565; /* لون الخلفية */
+            border: none; /* لا حدود */
+            color: white; /* لون النص */
+          padding: 6px 12px;
+            text-align: center; /* توسيط النص */
+            text-decoration: none; /* إزالة التسطير */
+            display: inline-block; /* عرض الزر في السطر */
+            font-size: 12px; /* حجم الخط */
+            margin: 4px 2px; /* هوامش الزر */
+            cursor: pointer; /* تغيير المؤشر عند المرور فوق الزر */
+            border-radius: 4px; /* زوايا دائرية */
+            transition: background-color 0.3s; /* تأثير الانتقال */
+        }
+
+        .btn:hover {
+            background-color: #08294f; /* لون الخلفية عند المرور فوق الزر */
+        }
     </style>
 </head>
 <body>
@@ -558,6 +575,9 @@
     <nav>
         <a class="logo" href="#">
             <img src="{% static 'assets/web/images/mlogo.png'%}" class="logo" alt="Malaq Logo"/>
+        </a>
+        <a href="{% url 'add_laundry' %}" class="add-laundry-btn btn" target="_blank">
+            <i class="fas fa-plus "></i> إضافة مغسلة جديدة
         </a>
         <!-- Hamburger Menu Icon for Mobile -->
         <div class="menu-icon" id="menu-icon">
@@ -567,19 +587,24 @@
             <li><a href="#who-we-are">About</a></li>
             <li><a href="#our-services">Services</a></li>
             <li><a href="#contact">Contact</a></li>
+            <li><a href="{%url 'privacy_policy'%}">privacy policy</a></li>
+            
             <li>
-                <a href="#">
+                <a href="https://hangerapp.com.sa/ar/admin/login/?next=/ar/admin/" class="login-btn btn"   target="_blank" >
                     <i class="fas fa-user"></i> <!-- User icon from Font Awesome -->
                     Log in
                 </a>
+           
             </li>
         </ul>
     </nav>
 
     <!-- Header Section with Background Image -->
     <div class="header">
+   
         <h1>Your<br>Laundry,<br>Your way</h1>
         <p>Welcome to Malaq, your premier destination for all your laundry needs. We are dedicated to connecting you with top-notch laundry services that will leave your clothes fresh, clean, and revitalized.</p>
+      
     </div>
 
     <!-- Main Content -->
@@ -626,6 +651,10 @@
                 <li>
                     <i class="fas fa-truck"></i> <!-- Delivery icon -->
                     <span>Delivery</span>
+                </li>
+                <li>
+                    <i class="fas fa-truck"></i> <!-- Delivery icon -->
+                    <span></span>
                 </li>
             </ul>
         </div>

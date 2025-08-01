@@ -4,6 +4,7 @@ from users.models import Users
 from laundries.models import Laundry
 from services.models import Service
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 class PaymentMethod(models.Model):
     PAYMENT_CHOICES = [
@@ -20,14 +21,18 @@ class PaymentMethod(models.Model):
     def __str__(self):
         return self.name
 
-
+    class Meta:
+        verbose_name = _("PaymentMethod")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("PaymentMethods")  # ترجمة الجمع
 class PaymentMethodsDetails(models.Model):
     payment_method = models.OneToOneField(PaymentMethod,on_delete=models.CASCADE)
     card_name = models.CharField(max_length=20, null=True, blank=True)
     card_number = models.CharField(max_length=20, null=True, blank=True)
     card_expiry_date = models.CharField(max_length=20, null=True, blank=True)
     cvv = models.CharField(max_length=4, null=True, blank=True)
-
+    class Meta:
+        verbose_name = _("PaymentMethodsDetails")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("PaymentMethodsDetails")  # ترجمة الجمع
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'قيد الانتظار'),
@@ -66,7 +71,9 @@ class Order(models.Model):
     def __str__(self):
         return f'Order {self.id} by {self.user.username}'
     
-
+    class Meta:
+        verbose_name = _("Order")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("Orders")  # ترجمة الجمع
 class OrderItem(models.Model):
     SERVICE_TYPE_CHOICES = [
         ('normal', 'عادي'),
@@ -82,7 +89,9 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'Item {self.service.name} in Order {self.order.id}'
-    
+    class Meta:
+        verbose_name = _("OrderItem")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("OrderItem")  # ترجمة الجمع   
 
 class Cart(models.Model):
     SERVICE_TYPE_CHOICES = [
@@ -101,7 +110,7 @@ class Cart(models.Model):
 
     class Meta:
         unique_together = ('user', 'laundry', 'service')  # قيد فريد
-
+        verbose_name = _("Cart")
     def __str__(self):
         return f'Cart for {self.user.username}'
 
@@ -115,9 +124,8 @@ class LaundryOrder(models.Model):
     profit = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # حقل أرباح التوصيل
 
     class Meta:
-        # unique_together = ('sales_agent', 'order')  # لضمان عدم تكرار العلاقة
-        verbose_name = 'laundry Order'
-        verbose_name_plural = 'laundry Orders'
+        verbose_name = _("LaundryOrder")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("LaundryOrders")  # ترجمة الجمع
 
     def __str__(self):
         return f'Order {self.order.id} assigned to {self.laundry.name}'
@@ -137,7 +145,9 @@ class PaymentDetail(models.Model):
     def __str__(self):
         return f'Payment {self.transaction_id} for Order {self.order.id}'
 
-
+    class Meta:
+        verbose_name = _("PaymentDetail")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("PaymentDetails")  # ترجمة الجمع
 class SalesAgentOrder(models.Model):
     sales_agent = models.ForeignKey(SalesAgent, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -147,8 +157,8 @@ class SalesAgentOrder(models.Model):
 
     class Meta:
         # unique_together = ('sales_agent', 'order')  # لضمان عدم تكرار العلاقة
-        verbose_name = 'Sales Agent Order'
-        verbose_name_plural = 'Sales Agent Orders'
+        verbose_name = _("SalesAgentOrder")
+        verbose_name_plural =_("SalesAgentOrders")
 
     def __str__(self):
         return f'Order {self.order.id} assigned to {self.sales_agent.name}'

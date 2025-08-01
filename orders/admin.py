@@ -25,8 +25,8 @@ admin.site.register(LaundryOrder, LaundryOrderAdmin)
 
 # تسجيل النماذج في واجهة الإدارة
 admin.site.register(Order, OrderAdmin)
-admin.site.register(Cart, CartAdmin)
+# admin.site.register(Cart, CartAdmin)
 admin.site.register(PaymentMethod)
 admin.site.register(PaymentDetail)
 
-admin.site.register(PaymentMethodsDetails)
+# admin.site.register(PaymentMethodsDetails)

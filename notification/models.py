@@ -1,5 +1,7 @@
 from django.db import models
 from users.models import Users
+from django.utils.translation import gettext_lazy as _
+
 class Notification(models.Model):
     user = models.ForeignKey(Users, on_delete=models.CASCADE)  # ربط الإشعار بالمستخدم
     message = models.TextField()  # نص الإشعار
@@ -16,3 +18,6 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'Notification for {self.user.username}: {self.message}'
+    class Meta:
+        verbose_name = _("Notification")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("Notifications")  # ترجمة الجمع

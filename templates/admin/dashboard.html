@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>{% trans "Dashboard" %}</h1>
+<div>
+    <h2>{% trans "إحصائيات" %}</h2>
+    <ul>
+        <li>{% trans "عدد المغاسل:" %} {{ laundries_count }}</li>
+        <li>{% trans "عدد المناديب:" %} {{ agents_count }}</li>
+    </ul>
+</div>
+{% endblock %}

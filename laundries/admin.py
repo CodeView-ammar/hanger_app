@@ -34,7 +34,7 @@ def after_laundry_save(sender, instance, created, **kwargs):
         LaundryService.objects.filter(laundry=instance).update(laundry=instance)
 
 
-@admin.register(UserLaundryMark)
-class UserLaundryMarkAdmin(ImportExportModelAdmin):
-    list_display = ("user","laundry","added_at")
+# @admin.register(UserLaundryMark)
+# class UserLaundryMarkAdmin(ImportExportModelAdmin):
+#     list_display = ("user","laundry","added_at")
     
