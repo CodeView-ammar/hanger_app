@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import SlideShowImage
+from .models import SlideShowImage,AppVersion
 
 class SlideShowImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,3 +17,13 @@ class SettingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Setting
         fields = ['key', 'sales_percentage', 'tax_rate', 'price_per_kg','price_per_kg_delivery']
+
+
+
+
+
+
+class AppVersionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AppVersion
+        fields = '__all__'

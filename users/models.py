@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
+
 class Users(AbstractUser):
     ROLE_CHOICES = [
         ('admin', 'Admin'),
@@ -10,14 +12,9 @@ class Users(AbstractUser):
         ('carriers', 'Carriers'),
     ]
     
-    # username = models.CharField(max_length=50, unique=True)
-    # password = models.CharField(max_length=255)
-    # email = models.EmailField(max_length=100, unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     is_laundry_owner = models.BooleanField(default=False)
-    # created_at = models.DateTimeField(auto_now_add=True)
-    # updated_at = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=200, blank=True)
     groups = models.ManyToManyField(
         Group,
@@ -46,6 +43,9 @@ class Address(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name = _("Address")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("Addresss")  # ترجمة الجمع
 
     def __str__(self):
         return f'Address for {self.user.username}'
@@ -60,6 +60,9 @@ class Wallet(models.Model):
     updated_at = models.DateTimeField(auto_now=True)  # تاريخ التحديث
     status = models.CharField(max_length=20, choices=[('active', 'نشطة'), ('closed', 'مغلقة')])  # حالة المحفظة
     notes = models.TextField(blank=True, null=True)  # ملاحظات
+    class Meta:
+        verbose_name = _("Wallet")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("Wallets")  # ترجمة الجمع
 
     def __str__(self):
         return f"{self.owner_name} - {self.balance}"
@@ -69,3 +72,16 @@ def create_user_wallet(sender, instance, created, **kwargs):
     if created:  # تحقق مما إذا كان المستخدم جديدًا
         Wallet.objects.create(user=instance, owner_name=instance.username,
         balance=0,status='active',notes='')  # إنشاء محفظة جديدة
+
+class TransferRequest(models.Model):
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)  # المناديب
+    amount = models.DecimalField(max_digits=10, decimal_places=2)  # المبلغ
+    date_requested = models.DateTimeField(auto_now_add=True)  # تاريخ الطلب
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('completed', 'Completed')], default='pending')  # حالة الطلب
+    notes = models.TextField(blank=True, null=True)  # ملاحظات إضافية
+    class Meta:
+        verbose_name = _("TransferRequest")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("TransferRequests")  # ترجمة الجمع
+
+    def __str__(self):
+        return f"{self.user.username} - {self.amount} - {self.status}"

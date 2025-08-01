@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
+from django.contrib.auth import views as auth_views
 
 # urlpatterns = (
 #     [
@@ -25,7 +26,7 @@ urlpatterns = ([
     path('api/', include('agent.urls')),
     path('api/', include('support.urls')),
     path('', include('website.urls')),
-    
+    path('admin/login/', auth_views.LoginView.as_view(), name='login'),
     # path('api/', include('invoices.urls')),
     # path('api/', include('transactions.urls')),
     # path('api/', include('reviews.urls')),

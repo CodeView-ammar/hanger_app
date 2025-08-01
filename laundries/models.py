@@ -3,6 +3,7 @@ from django.db import models
 from users.models import Users
 # from services.models import Service
 from settings.models import Setting
+from django.utils.translation import gettext_lazy as _
 
 class Laundry(models.Model):
     owner = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='laundries') 
@@ -21,6 +22,19 @@ class Laundry(models.Model):
     is_active = models.BooleanField(default=True)  # حقل إيقاف المغسلة
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    license_image = models.FileField(
+        upload_to='laundry_licenses/',
+        verbose_name='صورة الرخصة',
+        blank=True,
+        null=True
+    )
+    
+    commercial_record_image = models.FileField(
+        upload_to='commercial_records/',
+        verbose_name='صورة السجل التجاري',
+        blank=True,
+        null=True
+    )
     def save(self, *args, **kwargs):
         # تعيين القيمة الافتراضية من جدول الإعدادات
         if self.sales_percentage == 0:  # إذا لم يتم تعيين القيمة
@@ -34,7 +48,9 @@ class Laundry(models.Model):
     def __str__(self):
         return self.name
     
-
+    class Meta:
+        verbose_name = _("Laundry")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("Laundrys")  # ترجمة الجمع
 
 class LaundryHours(models.Model):
     laundry = models.ForeignKey(Laundry, on_delete=models.CASCADE, related_name='hours')
@@ -52,6 +68,9 @@ class LaundryHours(models.Model):
 
     def __str__(self):
         return f"{self.laundry.name} - {self.day_of_week}"
+    class Meta:
+        verbose_name = _("LaundryHours")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("LaundryHours")  # ترجمة الجمع
 
 
 class UserLaundryMark(models.Model):

@@ -4,6 +4,7 @@ from PIL import Image
 import io
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 # from orders.models import Order
@@ -77,3 +78,6 @@ class SalesAgent(models.Model):
         super().save(*args, **kwargs)  # Save the SalesAgent instance
     def __str__(self):
         return self.name
+    class Meta:
+        verbose_name = _("SalesAgent")  # ترجمة كلمة "Transaction"
+        verbose_name_plural = _("SalesAgents")  # ترجمة الجمع
