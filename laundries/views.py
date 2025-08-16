@@ -1,10 +1,11 @@
 from django.utils import timezone
 
+import notification
 from rest_framework.exceptions import ValidationError
 
 from orders.models import LaundryOrder, Order
 from rest_framework import viewsets
-from services.models import LaundryService, Service
+from services.models import Service
 from settings.models import Setting
 from .models import Laundry,LaundryHours
 from .serializers import LaundryOrderSerializer,LaundryHoursSerializer, LaundrySerializer, LaundrySerializerUser
@@ -157,15 +158,8 @@ def add_laundry(request):
             laundry.is_active = False  # Optionally set the owner's name
             
             laundry.save()  # Now save the laundry instance
-              # Add services only if they don't exist already
-            services = Service.objects.all()
-            for service in services:
-                # Check if the LaundryService already exists
-                if not LaundryService.objects.filter(laundry=laundry, service=service).exists():
-                    LaundryService.objects.create(
-                        laundry=laundry,  # Rely on the object instance
-                        service=service
-                    )
+            # No need to create LaundryService relationships anymore
+            # Services will be created directly for each laundry when needed
             
             return redirect('success')  # Redirect to the success page or required page
     else:
@@ -186,13 +180,12 @@ def add_laundry(request):
 #     serializer_class = LaundryServiceSerializer
 
 
-
-
 class LaundryListByUser(generics.ListAPIView):
     serializer_class = LaundrySerializerUser
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
+
         return Laundry.objects.filter(owner_id=user_id)
 
     def get(self, request, *args, **kwargs):
@@ -201,6 +194,8 @@ class LaundryListByUser(generics.ListAPIView):
         if not laundries:
             return Response({'message': 'No laundries found for this user.'}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.serializer_class(laundries, many=True)
+          # استرجاع المستخدم
+
         return Response(serializer.data)
 
 

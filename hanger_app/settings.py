@@ -91,12 +91,29 @@ ROOT_URLCONF = 'hanger_app.urls'
 WSGI_APPLICATION = 'hanger_app.wsgi.application'
 
 # قاعدة البيانات
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+Engine="django_tenants.postgresql_backend"
+User="admin_oaks"
+password="g4rT3MsSvjMaPuMMrMLLgWBtKwMABj"
+Host="localhost" 
+PORT= "5432"
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'melaq',
+        'USER': User,
+        'PASSWORD': password,
+        'HOST': 'localhost',
+        'PORT': '5432',  
     }
 }
+
+
 
 # التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [

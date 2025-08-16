@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import LaundryService, Service,ServiceCategory, SubService
+from .models import Service,ServiceCategory, SubService
 
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,10 +12,13 @@ class ServiceCategorySerializer(serializers.ModelSerializer):
 
 
 class LaundryServiceSerializer(serializers.ModelSerializer):
-    service = ServiceSerializer()
+    """Maintains compatibility with existing API structure"""
+    service = ServiceSerializer(source='*')
+    laundry = serializers.PrimaryKeyRelatedField(read_only=True)
+    
     class Meta:
-        model = LaundryService
-        fields = '__all__'
+        model = Service
+        fields = ['id', 'laundry', 'service']
 
 
 

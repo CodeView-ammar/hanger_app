@@ -131,3 +131,33 @@ class TransferRequestViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     # def perform_create(self, serializer):
     #     serializer.save(user=self.request.user)
+
+
+
+
+
+
+class UpdateFCMTokenAPIView(APIView):
+    """
+    API للتحقق من FCM token وتحديثه إذا تغيّر.
+    """
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        new_fcm = request.data.get('fcm')
+
+        # التحقق من وجود user_id و fcm
+        if not user_id or not new_fcm:
+            return Response({'error': 'user_id and fcm are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = Users.objects.get(id=user_id)
+        except Users.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # تحديث التوكن إذا كان مختلفًا
+        if user.fcm != new_fcm:
+            user.fcm = new_fcm
+            user.save()
+            return Response({'message': 'FCM token updated successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'FCM token is already up to date'}, status=status.HTTP_200_OK)

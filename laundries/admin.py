@@ -1,40 +1,40 @@
 from django.contrib import admin
 
-from services.models import LaundryService, Service
+from services.models import Service
 from .models import Laundry
 from .models import Laundry, LaundryHours,UserLaundryMark
 from import_export.admin import ExportMixin, ImportExportModelAdmin
 
+class ServiceAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'price', 'duration', "category", 'created_at', 'updated_at')
+    list_filter = ('price',)
+    search_fields = ('name', 'description', "category")
+    ordering = ('-created_at',)
 
-# from .models import LaundryService
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
 
-class LaundryHoursInline(admin.TabularInline):  # Use StackedInline for a vertical layout
-    model = LaundryHours
-    extra = 1  # Number of empty forms to display
+        # عرض فقط الخدمات المرتبطة بالمغسلة الخاصة بالمستخدم إذا كان laundry_owner
+        if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+            if hasattr(request.user, 'laundry'):
+                return qs.filter(laundry=request.user.laundry)
+            else:
+                return qs.none()
+        return qs  # المشرف أو غيره يرى كل شيء
 
-@admin.register(Laundry)
-class LaundryAdmin(ImportExportModelAdmin):
-    list_display = ('owner', 'name', 'address', 'phone', 'email', 'created_at', 'updated_at','owner_id','sales_percentage')
-    inlines = [LaundryHoursInline]  # إضافة Inlines لنموذجي الخدمات وساعات العمل
+    def has_module_permission(self, request):
+        return request.user.is_superuser or (
+            hasattr(request.user, 'role') and request.user.role == 'laundry_owner'
+        )
 
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+    def has_view_permission(self, request, obj=None):
+        return self.has_module_permission(request)
 
-@receiver(post_save, sender=Laundry)
-def after_laundry_save(sender, instance, created, **kwargs):
-    if created:
-        # عند إنشاء كائن Laundry جديد، نقوم بإنشاء LaundryService لجميع الخدمات
-        services = Service.objects.all()
-        for service in services:
-            LaundryService.objects.create(
-                laundry=instance,  # ربط الخدمة الجديدة بـ laundry
-                service=service
-            )
-    else:
-        LaundryService.objects.filter(laundry=instance).update(laundry=instance)
+    def has_change_permission(self, request, obj=None):
+        return self.has_module_permission(request)
 
+    def has_add_permission(self, request):
+        return self.has_module_permission(request)
 
-# @admin.register(UserLaundryMark)
-# class UserLaundryMarkAdmin(ImportExportModelAdmin):
-#     list_display = ("user","laundry","added_at")
-    
+    def has_delete_permission(self, request, obj=None):
+        return self.has_module_permission(request)

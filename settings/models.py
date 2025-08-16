@@ -76,7 +76,8 @@ class OTPAPI(models.Model):
     class Meta:
         verbose_name = _("OTPAPI")  # ترجمة كلمة "Transaction"
         verbose_name_plural = _("OTPAPIs")  # ترجمة الجمع
-
+    def is_expired(self):
+        return timezone.now() > self.created_at + timezone.timedelta(minutes=5)  # صالح 5 دقائق
     def __str__(self):
         return f"{self.phone_number} - {self.otp_code}"
 

@@ -3,12 +3,6 @@ from .models import Users, Address
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import Users  # Adjust the import based on your app structure
 from import_export.admin import ExportMixin, ImportExportModelAdmin
-# class UserAdmin(ImportExportModelAdmin):
-#     list_display = ('username', 'email', 'phone', 'role', 'is_laundry_owner', 'created_at', 'updated_at')
-#     list_filter = ('role', 'is_laundry_owner', 'created_at')
-#     search_fields = ('username', 'email', 'phone')
-#     ordering = ('-created_at',)
-
 class AddressAdmin(ImportExportModelAdmin):
     list_display = ('user', 'address_line', 'city', 'state', 'postal_code', 'country', 'created_at', 'updated_at')
     list_filter = ('city', 'state', 'country')
@@ -19,16 +13,14 @@ class AddressAdmin(ImportExportModelAdmin):
 admin.site.register(Address, AddressAdmin)
 
 
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Users
+
 
 
 @admin.register(Users)
 class UsersAdmin(BaseUserAdmin,ImportExportModelAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('المعلومات الشخصية', {'fields': ('name', 'email', 'phone', 'role', 'is_laundry_owner')}),
+        ('المعلومات الشخصية', {'fields': ('name', 'email', 'phone', 'role', 'is_laundry_owner','fcm')}),
         ('الصلاحيات', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('تواريخ مهمة', {'fields': ('last_login', 'date_joined')}),
     )
@@ -41,6 +33,13 @@ class UsersAdmin(BaseUserAdmin,ImportExportModelAdmin):
     list_display = ('username', 'email', 'role', 'is_superuser')
     search_fields = ('username', 'email', 'name', 'phone')
     ordering = ('username',)
+    
+    def get_model_perms(self, request):
+        perms = super().get_model_perms(request)
+        # إخفاء صفحة المستخدمين من أصحاب المغاسل
+        if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+            return {}
+        return perms
 # Register the custom user model with the customized admin
 
 
@@ -60,6 +59,13 @@ class TransferRequestAdmin(ImportExportModelAdmin):
     list_filter = ('status', 'date_requested')  # إضافة الفلترة حسب الحالة والتاريخ
     search_fields = ('user__username', 'amount')
     ordering = ('-date_requested',)
+    
+    def get_model_perms(self, request):
+        perms = super().get_model_perms(request)
+        # إخفاء طلبات التحويل من أصحاب المغاسل
+        if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+            return {}
+        return perms
 
     def get_urls(self):
         urls = super().get_urls()

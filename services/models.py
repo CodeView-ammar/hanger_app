@@ -16,7 +16,7 @@ class ServiceCategory(models.Model):
     
 class Service(models.Model):
 
-    laundry = models.ForeignKey(Laundry, on_delete=models.CASCADE)
+    laundry = models.ForeignKey(Laundry, on_delete=models.CASCADE, related_name='services')
     name = models.CharField(max_length=100)
     description = models.CharField(blank=True, null=True,max_length=1000,)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -38,18 +38,6 @@ class Service(models.Model):
 class MullteServiceCategory(models.Model):
     category = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE )
     service = models.ForeignKey(Service, on_delete=models.CASCADE )
-    
-    
-
-
-class LaundryService(models.Model):
-    laundry = models.ForeignKey(Laundry, on_delete=models.CASCADE, related_name='laundry_services')
-    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='service_laundries')
-    
-    class Meta:
-        unique_together = ('laundry', 'service')  # لضمان عدم تكرار العلاقة
-        verbose_name = _("LaundryService")  # ترجمة كلمة "Transaction"
-        verbose_name_plural = _("LaundryServices")  # ترجمة الجمع
 class SubService(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='sub_services')
     name = models.CharField(max_length=100)

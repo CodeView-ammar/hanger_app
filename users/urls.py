@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import UserViewSet,user_phone,AddressViewSet,user_phone_login,AddressDetailView,TransferRequestViewSet
+from .views import UserViewSet,user_phone,AddressViewSet,user_phone_login,AddressDetailView,TransferRequestViewSet,UpdateFCMTokenAPIView
+
 # from .views import UserViewSet, user_management,create_auth
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -21,7 +22,10 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # path('users/register/', create_auth),
-    
+  # users/api/urls.py
+
+    path('update-fcm/', UpdateFCMTokenAPIView.as_view(), name='update-fcm'),
+  
   
 ]
 

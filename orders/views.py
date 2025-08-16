@@ -1,9 +1,11 @@
 from accounts.models import Transaction
+from notification.fcm_service import FCMService
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import generics
 from rest_framework.decorators import action
+from users.models import Users
 from .models import Cart, LaundryOrder, PaymentDetail,PaymentMethod, PaymentMethodsDetails, SalesAgentOrder, Service,Order,OrderItem
 from .serializers import CartSerializer, OrderCustomSerializer, OrderItemSerializer_c, OrderStatusUpdateLaundrySerializer,PaymentMethodSerializer,PaymentMethodsDetailsSerializer, ServiceSerializer
 from .serializers import OrderSerializer, OrderItemSerializer
@@ -213,7 +215,7 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     serializer_class = OrderItemSerializer
 
 from django.db import IntegrityError
-
+from django.http import JsonResponse
 
 class CreateOrderView(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -295,6 +297,18 @@ class CreateOrderView(viewsets.ModelViewSet):
         # Delete cart items
         cart_items.delete()
         PaymentMethod.objects.all().update(default=False)
+        
+        try:
+            user = Users.objects.get(id=user_id)
+        except Users.DoesNotExist:
+            return JsonResponse({"success": False, "error": "User not found"}, status=404)
+
+        if not user.fcm:
+            return JsonResponse({"success": False, "error": "FCM token غير موجود للمستخدم"}, status=400)
+
+        # إرسال الإشعار
+        FCMService.send_message(token=user.fcm, title="طلب جديد", body="تم إنشاء الطلب")
+
 
         # Return the created order response
         serializer = self.get_serializer(order)

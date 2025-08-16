@@ -16,17 +16,18 @@ class Users(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     is_laundry_owner = models.BooleanField(default=False)
     name = models.CharField(max_length=200, blank=True)
-    groups = models.ManyToManyField(
-        Group,
-        related_name='custom_user_set',  # Change this to something unique
-        blank=True,
-    )
+    fcm = models.CharField(max_length=200, blank=True)
+    # groups = models.ManyToManyField(
+    #     Group,
+    #     related_name='custom_user_set',  # Change this to something unique
+    #     blank=True,
+    # )
     
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name='custom_user_set',  # Change this to something unique
-        blank=True,
-    )
+    # user_permissions = models.ManyToManyField(
+    #     Permission,
+    #     related_name='custom_user_set',  # Change this to something unique
+    #     blank=True,
+    # )
 
     def __str__(self):
         return self.name

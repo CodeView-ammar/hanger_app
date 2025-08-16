@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from .models import SupportTicket, SupportMessage, SupportFAQ
 from import_export.admin import ExportMixin, ImportExportModelAdmin
+from .models import SupportTicket, SupportMessage, SupportFAQ
 
 class SupportMessageInline(admin.TabularInline):
     model = SupportMessage
@@ -13,7 +14,6 @@ class SupportMessageInline(admin.TabularInline):
     
     def has_add_permission(self, request, obj=None):
         return True
-
 
 @admin.register(SupportTicket)
 class SupportTicketAdmin(ImportExportModelAdmin):
@@ -25,7 +25,7 @@ class SupportTicketAdmin(ImportExportModelAdmin):
     search_fields = ['title', 'user__username', 'user__name']
     readonly_fields = ['created_at', 'updated_at', 'resolved_at']
     inlines = [SupportMessageInline]
-    
+
     fieldsets = (
         ('معلومات التذكرة', {
             'fields': ('user', 'title', 'category')
@@ -38,11 +38,11 @@ class SupportTicketAdmin(ImportExportModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     def messages_count(self, obj):
         return obj.messages.count()
     messages_count.short_description = 'عدد الرسائل'
-    
+
     def quick_reply(self, obj):
         if obj.status not in ['closed', 'resolved']:
             url = reverse('admin:support_supportmessage_add') + f'?ticket={obj.id}'
@@ -52,14 +52,14 @@ class SupportTicketAdmin(ImportExportModelAdmin):
             )
         return '-'
     quick_reply.short_description = 'إجراءات'
-    
+
     def save_model(self, request, obj, form, change):
         if change and 'status' in form.changed_data:
             if obj.status in ['resolved', 'closed'] and not obj.resolved_at:
                 obj.resolved_at = timezone.now()
-        
+
         super().save_model(request, obj, form, change)
-        
+
         # إضافة رسالة نظام عند تغيير الحالة
         if change and 'status' in form.changed_data:
             SupportMessage.objects.create(
@@ -69,6 +69,21 @@ class SupportTicketAdmin(ImportExportModelAdmin):
                 content=f'تم تغيير حالة التذكرة إلى: {obj.get_status_display()}'
             )
 
+    def has_module_permission(self, request):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_view_permission(self, request, obj=None):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_add_permission(self, request):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_change_permission(self, request, obj=None):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_delete_permission(self, request, obj=None):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
 
 @admin.register(SupportMessage)
 class SupportMessageAdmin(ImportExportModelAdmin):
@@ -76,7 +91,7 @@ class SupportMessageAdmin(ImportExportModelAdmin):
     list_filter = ['message_type', 'created_at', 'is_read']
     search_fields = ['content', 'ticket__title', 'sender__username']
     readonly_fields = ['created_at']
-    
+
     fieldsets = (
         ('معلومات الرسالة', {
             'fields': ('ticket', 'sender', 'message_type')
@@ -89,11 +104,11 @@ class SupportMessageAdmin(ImportExportModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     def content_preview(self, obj):
         return obj.content[:50] + '...' if len(obj.content) > 50 else obj.content
     content_preview.short_description = 'معاينة المحتوى'
-    
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         
@@ -104,6 +119,21 @@ class SupportMessageAdmin(ImportExportModelAdmin):
         
         return form
 
+    def has_module_permission(self, request):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_view_permission(self, request, obj=None):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_add_permission(self, request):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_change_permission(self, request, obj=None):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_delete_permission(self, request, obj=None):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
 
 @admin.register(SupportFAQ)
 class SupportFAQAdmin(ImportExportModelAdmin):
@@ -111,7 +141,7 @@ class SupportFAQAdmin(ImportExportModelAdmin):
     list_filter = ['category', 'is_active', 'created_at']
     search_fields = ['question', 'answer', 'category']
     list_editable = ['order', 'is_active']
-    
+
     fieldsets = (
         ('السؤال والإجابة', {
             'fields': ('question', 'answer')
@@ -120,3 +150,18 @@ class SupportFAQAdmin(ImportExportModelAdmin):
             'fields': ('category', 'order', 'is_active')
         }),
     )
+
+    def has_module_permission(self, request):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_view_permission(self, request, obj=None):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_add_permission(self, request):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_change_permission(self, request, obj=None):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')
+
+    def has_delete_permission(self, request, obj=None):
+        return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')

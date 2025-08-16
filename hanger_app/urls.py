@@ -35,6 +35,6 @@ urlpatterns = ([
         path("admin/", admin.site.urls),
     )
 )+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-admin.site.site_header = "Hanger Admin"
-admin.site.site_title = "Hanger Admin Portal"
-admin.site.index_title = "Welcome to Hanger Researcher Portal"
+admin.site.site_header = "لوحة تحكم معلاق"
+admin.site.site_title = "لوحة تحكم معلاق"
+admin.site.index_title = "مرحبا بك في لوحة تحكم معلاق"

@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from .models import LaundryService, Service, ServiceCategory, SubService
+from .models import Service, ServiceCategory, SubService
 from .serializers import LaundryServiceSerializer, ServiceSerializer,ServiceCategorySerializer, SubServiceSerializer
 from django_filters import rest_framework as filters
 
@@ -25,15 +25,16 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
 class LaundryServiceFilter(filters.FilterSet):
     laundry_id = filters.NumberFilter(field_name='laundry_id')
-    category = filters.NumberFilter(field_name='service__category')  # افترض أن `Service` يحتوي على حقل `category`
+    category = filters.NumberFilter(field_name='category')
 
     class Meta:
-        model = LaundryService
+        model = Service
         fields = ['laundry_id', "category"]
 
 
 class LaundryServiceViewSet(viewsets.ModelViewSet):
-    queryset = LaundryService.objects.all()
+    """Maintains compatibility with existing LaundryService API by using Service model directly"""
+    queryset = Service.objects.all()
     serializer_class = LaundryServiceSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = LaundryServiceFilter
@@ -47,7 +48,7 @@ class LaundryServiceViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(laundry_id=laundry_id)
 
         if category:
-            queryset = queryset.filter(service__category=category)
+            queryset = queryset.filter(category=category)
 
         return queryset
 
@@ -59,9 +60,9 @@ class ServiceCategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         laundry_id = self.request.query_params.get('laundry_id', None)
         if laundry_id is not None:
-            # تصفية التصنيفات بناءً على وجود خدمات مرتبطة بـ laundry_id
-            return ServiceCategory.objects.filter(services__service_laundries__laundry_id=laundry_id).distinct()
-        return ServiceCategory.objects.none() 
+            # تصفية التصنيفات بناءً على وجود خدمات مرتبطة بـ laundry_id مباشرة
+            return ServiceCategory.objects.filter(services__laundry_id=laundry_id).distinct()
+        return ServiceCategory.objects.all() 
 
 
 class SubServiceViewSet(viewsets.ModelViewSet):

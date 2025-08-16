@@ -154,7 +154,7 @@ def generate_pdf_report(modeladmin, request, queryset):
 generate_pdf_report.short_description = "Print report as PDF table"
 
 @admin.register(Transaction)
-class TransactionAdmin(ImportExportModelAdmin):
+class TransactionAdmin(admin.ModelAdmin):
     list_display = ('user', 'date', 'transaction_type', 'amount', 'debit', 'credit', 'malaq_ratio', 'description')
     list_filter = (
         DateRangeFilter,
@@ -166,6 +166,20 @@ class TransactionAdmin(ImportExportModelAdmin):
     ordering = ('-date',)
     autocomplete_fields = ('user',)
     actions = [generate_pdf_report]
+    def has_add_permission(self, request):
+        return False  # منع الإضافة
+
+    def has_change_permission(self, request, obj=None):
+        return False  # منع التعديل
+
+    def has_delete_permission(self, request, obj=None):
+        return False  # منع الحذف
+
+    def get_import_formats(self):
+        return []  # منع استيراد البيانات
+
+    def get_export_formats(self):
+        return []  # منع تصدير البيانات
 
 from django.contrib import admin
 from django.urls import path, reverse
@@ -180,7 +194,11 @@ class WalletAdmin(ImportExportModelAdmin):
     list_filter = ('status', 'created_at')
     
     search_fields = ['owner_name', 'user__username']
-
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+            return qs.filter(user=request.user)
+        return qs
     def transfer_button(self, obj):
         # تحقق مما إذا كان المستخدم هو صاحب المغسلة
         if obj.user.is_laundry_owner:  # تأكد من أن لديك هذا الحقل في نموذج المستخدم
