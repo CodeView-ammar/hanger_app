@@ -341,6 +341,18 @@ class CustomerReceiveOrderView(APIView):
         # )
 
         return Response({'success': 'تم تحديث حالة الطلب إلى استلام العميل'}, status=status.HTTP_200_OK)
+class CanceledReceiveOrderView(APIView):
+    def patch(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'error': 'الطلب غير موجود'}, status=status.HTTP_404_NOT_FOUND)
+
+        order.status = 'canceled'
+        order.save()
+
+
+        return Response({'success': 'تم تحديث حالة الطلب إلى استلام العميل'}, status=status.HTTP_200_OK)
 
 class OrderListView(viewsets.ModelViewSet):
     queryset = Order.objects.all()  # تحديد الاستعلام الافتراضي

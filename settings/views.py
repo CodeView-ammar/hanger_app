@@ -64,8 +64,15 @@ def version_compare(current_version, latest_version):
     # إرجاع True إذا كان الإصدار الحالي أكبر أو مساوٍ للإصدار الأخير
     return current_tuple >= latest_tuple
 
+import os
+from dotenv import load_dotenv
 
-API_SECRET = "$2y$10$ilfbIJFyVP3IkGYOmt4yVOVrRXIHbjRIQ92NiY39S4ZEJf9tjoKLu"
+# تحميل المتغيرات من ملف .env
+load_dotenv()
+
+# الآن يمكنك الحصول على المتغير
+API_SECRET = os.environ.get("api_token")
+
 API_URL_SEND_OTP = "https://api.authentica.sa/api/sdk/v1/sendOTP"
 API_URL_verify_OTP = "https://api.authentica.sa/api/sdk/v1/verifyOTP"
 
