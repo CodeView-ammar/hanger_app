@@ -9,5 +9,4 @@ urlpatterns = [
     path('<int:notification_id>/delete/', views.delete_notification, name='delete-notification'),
     path('create/', views.create_notification, name='create-notification'),
 
-    path('send-test-notification/', views.SendTestNotificationView.as_view(), name='send-test-notification'),
 ]
