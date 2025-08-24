@@ -18,17 +18,19 @@ class LaundryReviewSerializer(serializers.ModelSerializer):
             'service_quality', 'delivery_speed', 'price_value',
             'average_rating', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['user', 'created_at', 'updated_at']
+        # read_only_fields = [ 'created_at', 'updated_at']
 
 class LaundryReviewCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = LaundryReview
         fields = [
-            'laundry', 'rating', 'comment', 'service_quality', 
+            'laundry','user',"order", 'rating', 'comment', 'service_quality', 
             'delivery_speed', 'price_value'
         ]
+        read_only_fields = ['rating']  # rating يتم حسابه تلقائيًا
+
     
-    def create(self, validated_data):
-        # إضافة المستخدم الحالي من السياق
-        validated_data['user'] = self.context['request'].user
-        return super().create(validated_data)
+    # def create(self, validated_data):
+    #     # إضافة المستخدم الحالي من السياق
+
+    #     return super().create(validated_data)

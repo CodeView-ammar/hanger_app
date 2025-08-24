@@ -13,5 +13,6 @@ urlpatterns = [
     
     path('reviews/laundry/<int:laundry_id>/reviews/', views.LaundryReviewListCreateView.as_view(), name='laundry-reviews'),
     path('reviews/laundry/<int:laundry_id>/stats/', views.laundry_rating_stats, name='laundry-review-stats'),
+    path('check/<int:order_id>/<int:user_id>/', views.CheckOrderReviewView.as_view(), name='check-order-review'),
 
 ]

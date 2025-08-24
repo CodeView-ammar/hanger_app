@@ -47,7 +47,8 @@ class Order(models.Model):
         # بعد الانتهاء من الغسيل 
         ('delivery_by_courier', 'التوصيل عن طريق المندوب'), 
         ('courier_accepted_delivery', 'المندوب قبل طلب التوصيل'), 
-
+        
+        ('customer_accepted_end', 'استلم الطلب بنفسك'), 
         ('delivered_to_customer',"تم تسليم الطلب للعميل"),
         ('delivered_to_courier',"تم تسليم الطلب للمندوب"),
 

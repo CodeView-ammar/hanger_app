@@ -33,8 +33,16 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # للاختبار نستخدم المستخدم رقم 5
         from users.models import Users
-        user = Users.objects.get(id=5)
-        serializer.save(user=user)
+        user_id = self.request.data.get('user')
+
+        if not user_id:
+            raise serializers.ValidationError({"user": "معرف المستخدم مطلوب"})
+
+        try:
+            user = Users.objects.get(id=user_id)
+        except Users.DoesNotExist:
+            raise serializers.ValidationError({"user": "المستخدم غير موجود"})
+
     
     @action(detail=True, methods=['post'])
     def assign_to_staff(self, request, pk=None):

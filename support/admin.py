@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils import timezone
+
+from notification.fcm_service import FCMService
 from .models import SupportTicket, SupportMessage, SupportFAQ
 from import_export.admin import ExportMixin, ImportExportModelAdmin
 from .models import SupportTicket, SupportMessage, SupportFAQ
@@ -68,6 +70,18 @@ class SupportTicketAdmin(ImportExportModelAdmin):
                 message_type='system',
                 content=f'تم تغيير حالة التذكرة إلى: {obj.get_status_display()}'
             )
+
+           # إرسال إشعار للمستخدم
+        try:
+            user = obj.user
+            if user and user.fcm:
+                FCMService.send_message(
+                    token=user.fcm,
+                    title="إغلاق التذكرة",
+                    body=f"تم إغلاق تذكرتك رقم {obj.id} بعنوان: {obj.title}"
+                )
+        except Exception as e:
+            print(f"خطأ أثناء إرسال الإشعار: {e}")
 
     def has_module_permission(self, request):
         return not (hasattr(request.user, 'role') and request.user.role == 'laundry_owner')

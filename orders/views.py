@@ -15,6 +15,17 @@ from laundries.models import Laundry
 from settings.models import Setting
 from decimal import Decimal
     
+notification_messages = {
+    "pending": ("طلب جديد", "تم استلام طلبك وهو قيد الانتظار"),
+    "courier_accepted": ("المندوب استلم الطلب", "تم قبول الطلب وسيتم استلامه من العميل"),
+    "courier_on_the_way": ("المندوب في الطريق", "المندوب قادم إليك لاستلام الطلب"),
+    "picked_up_from_customer": ("تم استلام الطلب", "المندوب استلم الطلب من العميل"),
+    "delivered_to_laundry": ("تم تسليم الطلب", "تم تسليم الطلب للمغسلة"),
+    "in_progress": ("قيد المعالجة", "طلبك تحت المعالجة في المغسلة"),
+    "ready_for_delivery": ("جاهز للتسليم", "طلبك جاهز للتوصيل"),
+    "completed": ("طلب مكتمل", "تم إنهاء ومعالجة طلبك بنجاح"),
+    "canceled": ("طلب ملغي", "تم إلغاء الطلب بناءً على طلبك"),
+}
 
 
 class CartViewSet(viewsets.ModelViewSet):
@@ -341,6 +352,7 @@ class CustomerReceiveOrderView(APIView):
         # )
 
         return Response({'success': 'تم تحديث حالة الطلب إلى استلام العميل'}, status=status.HTTP_200_OK)
+
 class CanceledReceiveOrderView(APIView):
     def patch(self, request, order_id):
         try:
@@ -348,11 +360,29 @@ class CanceledReceiveOrderView(APIView):
         except Order.DoesNotExist:
             return Response({'error': 'الطلب غير موجود'}, status=status.HTTP_404_NOT_FOUND)
 
-        order.status = 'canceled'
+        # اجلب من body
+        status_value = request.data.get('status', None)
+
+        if not status_value:
+            return Response({'error': 'الحالة غير مرسلة'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # تحديث الحالة
+        order.status = status_value
         order.save()
 
+       
+        # جلب العنوان والنص المناسب
+        title, body = notification_messages.get(status_value, ("تحديث جديد", "تم تحديث حالة طلبك"))
 
-        return Response({'success': 'تم تحديث حالة الطلب إلى استلام العميل'}, status=status.HTTP_200_OK)
+        # إرسال الإشعار (تأكد أن order.user.fcm موجود)
+        if hasattr(order.user, "fcm") and order.user.fcm:
+            FCMService.send_message(
+                token=order.user.fcm,
+                title=title,
+                body=body
+            )
+
+        return Response({'success': f'تم تحديث حالة الطلب إلى {status_value}'}, status=status.HTTP_200_OK)
 
 class OrderListView(viewsets.ModelViewSet):
     queryset = Order.objects.all()  # تحديد الاستعلام الافتراضي
@@ -430,7 +460,6 @@ class OrderItemView(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-
 class OrderStatusUpdateView(generics.UpdateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderStatusUpdateSerializer
@@ -439,64 +468,45 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
         order = self.get_object()
         new_status = request.data.get('status')
         delivery_profit = request.data.get('delivery_profit')
-        _delivery_profit=0.0
-        if delivery_profit is None:
-            delivery_profit=0
-        print("W"*90)
-        # التحقق من الحالة الجديدة
-        valid_statuses = [
-            "pending",
-            "courier_accepted",
-            "courier_on_the_way",
-            "picked_up_from_customer",
-            "delivered_to_laundry",
-            "in_progress",
-            "ready_for_delivery",
-            "completed",
-            "canceled",
-            "customer_accepted_end",
-            "courier_accepted_end",
-            "customer_received",
-            "courier_received",
-        ]
         user_id = request.data.get('user_id')
-        sales_agent = SalesAgent.objects.get(user_id=user_id)
 
+        # valid statuses
+        valid_statuses = [
+            "pending", "courier_accepted", "courier_on_the_way",
+            "picked_up_from_customer", "delivered_to_laundry",
+            "in_progress", "ready_for_delivery", "completed",
+            "canceled", "customer_accepted_end", "courier_accepted_end",
+            "customer_received", "courier_received",
+        ]
 
         if new_status not in valid_statuses:
             return Response({'error': 'Invalid status update.'}, status=status.HTTP_400_BAD_REQUEST)
 
-       # منع التحديث إذا كانت الحالة الحالية هي delivered_to_laundry
+        # جلب المندوب
+        try:
+            sales_agent = SalesAgent.objects.get(user_id=user_id)
+        except SalesAgent.DoesNotExist:
+            return Response({'error': 'Sales agent not found.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # منع التحديث إذا كانت الحالة delivered_to_laundry
         if order.status == 'delivered_to_laundry':
             return Response({'error': 'Cannot change status from delivered_to_laundry.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # if (order.status == 'picked_up_from_customer' and new_status == 'delivered_to_laundry'):
-        #     _delivery_profit=float(delivery_profit)
-        #     if _delivery_profit is None:
-        #         _delivery_profit=0
-        #     Transaction.objects.create(
-        #         user_id=user_id,
-        #         transaction_type='deposit',
-        #         amount=_delivery_profit,
-        #         debit=_delivery_profit,
-        #         credit=0,
-        #         description='ارباح توصيل مندوب'
-        #     )
-        # تحقق من الحالة الحالية قبل التحديث
+        _delivery_profit = Decimal(delivery_profit or 0)
+
+        # تحقق من التسلسل المنطقي للحالات
         if (order.status == 'pending' and new_status == 'courier_accepted'):
-            order.status = 'courier_accepted'
+            order.status = new_status
             order.sales_agent_id = sales_agent.id
-           
+
         elif (order.status == 'courier_accepted' and new_status == 'courier_on_the_way'):
-            order.status = 'courier_on_the_way'
+            order.status = new_status
+
         elif (order.status == 'courier_on_the_way' and new_status == 'picked_up_from_customer'):
-            order.status = 'picked_up_from_customer'
+            order.status = new_status
+
         elif (order.status == 'picked_up_from_customer' and new_status == 'delivered_to_laundry'):
-            order.status = 'delivered_to_laundry'
-            _delivery_profit=delivery_profit
-            _delivery_profit=Decimal(delivery_profit)
-            if _delivery_profit is None:
-                _delivery_profit=0
+            order.status = new_status
             Transaction.objects.create(
                 user_id=user_id,
                 transaction_type='deposit',
@@ -505,29 +515,28 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
                 credit=0,
                 description='ارباح توصيل مندوب'
             )
-             # إنشاء عملية مالية جديدة
-            # Transaction.objects.create(
-            #     user_id=user_id,
-            #     transaction_type='deposit',
-            #     amount=_delivery_profit,
-            #     debit=_delivery_profit,
-            #     credit=0,
-            #     description='ارباح توصيل مندوب'
-            # )
         else:
             return Response({'error': f'Status cannot be updated from {order.status} to {new_status}.'}, status=status.HTTP_400_BAD_REQUEST)
-       
-       
-        try:
-            SalesAgentOrder.objects.create(sales_agent=sales_agent, order=order,status=order.status,delivery_profit=_delivery_profit)
 
-        except SalesAgent.DoesNotExist:
-            return Response({'error': 'Sales agent not found.'}, status=status.HTTP_400_BAD_REQUEST)
+        # سجل العملية
+        SalesAgentOrder.objects.create(
+            sales_agent=sales_agent,
+            order=order,
+            status=order.status,
+            delivery_profit=_delivery_profit
+        )
 
         order.save()
         serializer = self.get_serializer(order)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
+        # إشعارات
+
+        title, body = notification_messages.get(order.status, ("تحديث جديد", "تم تحديث حالة طلبك"))
+
+        if hasattr(order.user, "fcm") and order.user.fcm:
+            FCMService.send_message(token=order.user.fcm, title=title, body=body)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from orders.models import Order
 from users.models import Users
 from services.models import Service
 from laundries.models import Laundry
@@ -20,6 +21,7 @@ from django.utils.translation import gettext_lazy as _
 class LaundryReview(models.Model):
     laundry = models.ForeignKey(Laundry, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='laundry_reviews')
     rating = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)],
         help_text="تقييم من 1 إلى 5 نجوم"
@@ -48,8 +50,13 @@ class LaundryReview(models.Model):
     def __str__(self):
         return f'تقييم {self.laundry.name} بواسطة {self.user.username} - {self.rating} نجوم'
 
+    @staticmethod
+    def is_order_reviewed(user_id, order_id):
+        """التحقق إذا كان الطلب تم تقييمه من قبل هذا المستخدم"""
+        return LaundryReview.objects.filter(user_id=user_id, order_id=order_id).exists()
+
     class Meta:
-        unique_together = ('laundry', 'user')  # منع المستخدم من تقييم نفس المغسلة أكثر من مرة
+        unique_together = ('laundry', 'user',"order")  # منع المستخدم من تقييم نفس المغسلة أكثر من مرة
         ordering = ['-created_at']
         verbose_name = _("LaundryReview")  # ترجمة كلمة "Transaction"
         verbose_name_plural = _("LaundryReviews")  # ترجمة الجمع

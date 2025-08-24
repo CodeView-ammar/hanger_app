@@ -10,17 +10,13 @@ class AddressAdmin(ImportExportModelAdmin):
 
 # تسجيل النماذج في واجهة الإدارة
 # admin.site.register(Users, UserAdmin)
-admin.site.register(Address, AddressAdmin)
-
-
-
-
+# admin.site.register(Address, AddressAdmin)
 
 @admin.register(Users)
-class UsersAdmin(BaseUserAdmin,ImportExportModelAdmin):
+class UsersAdmin(BaseUserAdmin, ImportExportModelAdmin):
     fieldsets = (
-        (None, {'fields': ('username', 'password')}),
-        ('المعلومات الشخصية', {'fields': ('name', 'email', 'phone', 'role', 'is_laundry_owner','fcm')}),
+        (None, {'fields': ('username', 'password')}),  # اسم المستخدم وكلمة المرور يظل قابل للتعديل
+        ('المعلومات الشخصية', {'fields': ('name',)}),  # فقط الاسم يبقى قابل للتعديل
         ('الصلاحيات', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('تواريخ مهمة', {'fields': ('last_login', 'date_joined')}),
     )
@@ -33,14 +29,40 @@ class UsersAdmin(BaseUserAdmin,ImportExportModelAdmin):
     list_display = ('username', 'email', 'role', 'is_superuser')
     search_fields = ('username', 'email', 'name', 'phone')
     ordering = ('username',)
-    
-    def get_model_perms(self, request):
-        perms = super().get_model_perms(request)
-        # إخفاء صفحة المستخدمين من أصحاب المغاسل
+
+    # def get_model_perms(self, request):
+    #     perms = super().get_model_perms(request)
+    #     if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+    #         return {}  # إخفاء شاشة المستخدمين الأخرى
+    #     return perms
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
         if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
-            return {}
-        return perms
-# Register the custom user model with the customized admin
+            return qs.filter(pk=request.user.pk)  # يعرض بياناته فقط
+        return qs
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+            if obj is None:
+                return True
+            return obj.pk == request.user.pk  # يسمح بتعديل بياناته فقط
+        return False
+
+    def has_add_permission(self, request):
+        return False  # منع الإضافة
+
+    def has_delete_permission(self, request, obj=None):
+        return False  # منع الحذف
+
+    # جعل باقي الحقول غير قابلة للتعديل لصاحب المغسلة
+    def get_readonly_fields(self, request, obj=None):
+        if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+            # الحقول التي لا يمكن تعديلها
+            return ('email', 'phone', 'role', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions', 'last_login', 'date_joined')
+        return super().get_readonly_fields(request, obj)
 
 
 from django.http import HttpResponseRedirect

@@ -194,11 +194,32 @@ class WalletAdmin(ImportExportModelAdmin):
     list_filter = ('status', 'created_at')
     
     search_fields = ['owner_name', 'user__username']
+    def has_add_permission(self, request):
+        if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+            return False
+        return super().has_add_permission(request)
+
+    # منع تعديل أي مستخدم آخر لصاحب المغسلة
+    def has_change_permission(self, request, obj=None):
+        if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+            return False  # يسمح بالدخول للقائمة (لكن سيُظهر فقط بياناته في get_queryset)
+        return super().has_change_permission(request, obj)
+
+    # منع حذف أي مستخدم لصاحب المغسلة
+    def has_delete_permission(self, request, obj=None):
+        if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
+            return False
+        return super().has_delete_permission(request)
+
+    # عرض فقط بيانات المستخدم نفسه
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if hasattr(request.user, 'role') and request.user.role == 'laundry_owner':
-            return qs.filter(user=request.user)
+            return qs.filter(pk=request.user.pk)
         return qs
+
+
+
     def transfer_button(self, obj):
         # تحقق مما إذا كان المستخدم هو صاحب المغسلة
         if obj.user.is_laundry_owner:  # تأكد من أن لديك هذا الحقل في نموذج المستخدم

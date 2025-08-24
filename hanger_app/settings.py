@@ -13,8 +13,8 @@ DEBUG = True
 
 # النطاقات المسموح بها
 ALLOWED_HOSTS = [
-    "hanger.metasoft-ar.com",
     "hangerapp.com.sa",
+    "melaq.sa",
     "*"
 ]
 

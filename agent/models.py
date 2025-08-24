@@ -61,8 +61,27 @@ class SalesAgent(models.Model):
             img_file = ContentFile(img_io.getvalue(), name=self.license_image.name)
             self.license_image = img_file  # Assign resized image to license_image field
 
-        # Create a new user only if this is a new SalesAgent instance
+        # # Create a new user only if this is a new SalesAgent instance
+        # if not self.pk:  # Check if the instance is new
+        #     user = Users(
+        #         name=self.name,
+        #         username=self.phone,  # Use phone as username
+        #         email=self.email,
+        #         phone=self.phone,
+        #         role='carriers',  # Set the appropriate role
+        #         password=self.phone,  # Use phone as password (consider hashing it)
+        #         is_active=False,  # Set to inactive initially
+        #     )
+        #     user.save()  # Save the new user
+        #     self.user = user  # Set the user field
+# Create a new user only if this is a new SalesAgent instance
         if not self.pk:  # Check if the instance is new
+            # Normalize the phone number
+            if self.phone.startswith('0'):
+                self.phone = '+966' + self.phone[1:]  # Remove the leading 0 and add +966
+            elif self.phone.startswith('5'):
+                self.phone = '+966' + self.phone  # Add +966 if it starts with 58
+
             user = Users(
                 name=self.name,
                 username=self.phone,  # Use phone as username
@@ -74,7 +93,6 @@ class SalesAgent(models.Model):
             )
             user.save()  # Save the new user
             self.user = user  # Set the user field
-
         super().save(*args, **kwargs)  # Save the SalesAgent instance
     def __str__(self):
         return self.name

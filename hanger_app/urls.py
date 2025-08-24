@@ -15,7 +15,7 @@ from django.contrib.auth import views as auth_views
 # )
 urlpatterns = ([
     # path('admin/', admin.site.urls),
-        path('api/', include('users.urls')),
+    path('api/', include('users.urls')),
     path('api/', include('laundries.urls')),  # Include your app's URLs
     path('api/', include('settings.urls')),  # Include your app's URLs
     path('api/notifications/', include('notification.urls')),

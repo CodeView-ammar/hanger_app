@@ -7,11 +7,11 @@ from django.db.models import Avg
 from reviews.models import LaundryReview
 from .serializers import LaundryReviewSerializer, LaundryReviewCreateSerializer
 from laundries.models import Laundry
-
+from rest_framework.views import APIView
 
 class LaundryReviewListCreateView(generics.ListCreateAPIView):
-    serializer_class = LaundryReviewSerializer
-    # permission_classes = [IsAuthenticated]  # معطل للاختبار
+    serializer_class = LaundryReviewCreateSerializer
+    permission_classes = []  # معطل للاختبار
     
     def get_queryset(self):
         laundry_id = self.kwargs.get('laundry_id')
@@ -26,7 +26,24 @@ class LaundryReviewListCreateView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         # استخدام البيانات المرسلة مباشرة للاختبار
-        pass
+        service_quality = self.request.data.get('service_quality')
+        delivery_speed = self.request.data.get('delivery_speed')
+        price_value = self.request.data.get('price_value')
+
+        try:
+            avg_rating = round((
+                int(service_quality) +
+                int(delivery_speed) +
+                int(price_value)
+            ) / 3)
+        except Exception:
+            avg_rating = 5  # fallback افتراضي
+        serializer.save(rating=avg_rating)
+
+class CheckOrderReviewView(APIView):
+    def get(self, request, order_id, user_id):
+        reviewed = LaundryReview.is_order_reviewed(user_id=user_id, order_id=order_id)
+        return Response({"reviewed": reviewed}, status=status.HTTP_200_OK)
 
 
 class LaundryReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -82,7 +99,3 @@ def laundry_rating_stats(request, laundry_id):
         return Response({'error': 'المغسلة غير موجودة'}, status=status.HTTP_404_NOT_FOUND)
 
 
-# class ServiceReviewViewSet(viewsets.ModelViewSet):
-#     queryset = ServiceReview.objects.all()
-#     serializer_class = ServiceReviewSerializer
-#     permission_classes = [IsAuthenticated]
